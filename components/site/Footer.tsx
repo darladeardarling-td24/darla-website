@@ -48,12 +48,13 @@ export default function Footer({ s }: { s: Settings }) {
           {NAV.slice(0, 3).map((n) => (
             <Link key={n.href} href={n.href} className="hover:text-mink">{n.label}</Link>
           ))}
-          <span className="ml-auto text-veil/40">© {new Date().getFullYear()} Darla Dear Darling</span>
+          <span className="ml-auto text-veil/40">© {new Date().getFullYear()} Darla</span>
         </div>
       </div>
+      {/* Chữ ký cuối trang: chữ viền mảnh, không lặp logo đặc */}
       <p
-        className="select-none text-center font-display leading-[0.78] tracking-[0.06em] text-ink"
-        style={{ fontSize: 'clamp(5rem, 24.5vw, 22rem)', marginTop: '0.12em' }}
+        className="text-outline select-none text-center font-display leading-[0.8] tracking-[0.06em] opacity-60"
+        style={{ fontSize: 'clamp(5rem, 24.5vw, 22rem)', marginTop: '0.14em' }}
         aria-hidden
       >
         DARLA

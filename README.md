@@ -64,6 +64,14 @@ Từ giờ, mỗi lần đẩy code mới lên GitHub, Vercel sẽ tự cập nh
 
 **Tên miền riêng** (nếu có): Vercel → Project → **Settings → Domains** → thêm tên miền, rồi làm theo hướng dẫn trỏ DNS.
 
+## Cập nhật cho project đã chạy
+
+Khi có bản cập nhật kèm file `supabase/update-…sql`, chạy file đó **một lần** trong Supabase → SQL Editor trước khi đẩy code mới lên GitHub.
+
+| File | Nội dung |
+| --- | --- |
+| `update-01-anh-trang-chu.sql` | Thêm mục **Ảnh trang chủ** trong admin. Nếu nội dung mẫu còn nguyên thì bỏ bớt chữ "Darla Dear Darling" lặp lại. |
+
 ## 4. Chạy thử trên máy tính (không bắt buộc)
 
 Cần cài [Node.js 20+](https://nodejs.org).
@@ -92,6 +100,7 @@ Quyền được kiểm tra ngay trong cơ sở dữ liệu (Row Level Security)
 
 ## Ảnh
 
+- **Ảnh trang chủ**: vào admin → **Ảnh trang chủ**. Mỗi vị trí (ảnh lớn đầu trang, ảnh riêng cho điện thoại, ảnh chi tiết nhỏ, 3 ảnh lookbook) có sơ đồ chỉ chỗ ảnh nằm, nút đổi hoặc gỡ ảnh, và lựa chọn giữ phần trên, giữa hoặc dưới khi ảnh bị cắt. Nhân sự nội dung cũng đổi được mục này.
 - Ảnh được **nén ngay trên trình duyệt** trước khi tải lên: bản lớn có cạnh dài 2000px, bản nhỏ 900px cho danh sách, định dạng WebP. Ảnh 8–15MB từ máy ảnh thường còn khoảng 300–600KB và vẫn giữ nét ren, voan.
 - Nên dùng ảnh dọc tỉ lệ 3:4. Ảnh đầu tiên của mỗi sản phẩm là ảnh bìa.
 - Gói miễn phí của Supabase có 1GB lưu ảnh, đủ cho khoảng 1.000–1.500 mẫu váy (mỗi mẫu 3–4 ảnh).

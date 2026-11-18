@@ -180,6 +180,30 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
+-- 3b. Ảnh trang chủ (đổi trong admin → Ảnh trang chủ)
+-- ---------------------------------------------------------------------
+
+create table if not exists public.home_media (
+  slot text primary key,             -- vị trí ảnh trên trang chủ
+  image jsonb,                       -- { "url": "...", "thumb": "..." }
+  focus text not null default 'center' check (focus in ('top', 'center', 'bottom')),
+  caption text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.home_media enable row level security;
+
+drop policy if exists "home_media read" on public.home_media;
+create policy "home_media read" on public.home_media for select using (true);
+drop policy if exists "home_media staff insert" on public.home_media;
+create policy "home_media staff insert" on public.home_media for insert with check (public.is_staff());
+drop policy if exists "home_media staff update" on public.home_media;
+create policy "home_media staff update" on public.home_media for update using (public.is_staff()) with check (public.is_staff());
+
+grant select on public.home_media to anon, authenticated;
+grant insert, update on public.home_media to authenticated;
+
+-- ---------------------------------------------------------------------
 -- 4. Kho ảnh (Storage) — bucket công khai "media"
 -- ---------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

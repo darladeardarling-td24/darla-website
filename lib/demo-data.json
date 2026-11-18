@@ -5,38 +5,251 @@
     "season_label": "Bộ sưu tập Xuân Hè 2026",
     "hero_title": "Em mặc gì, em sẽ là người ấy",
     "hero_subtitle": "Váy cưới may đo tinh giản theo tinh thần châu Âu — cho cô dâu yêu sự thanh lịch, nhẹ nhàng và vượt thời gian.",
-    "about": "Darla Dear Darling là studio váy cưới theo đuổi vẻ đẹp tối giản: phom dáng sạch, chất liệu tốt, đường may tỉ mỉ. Chúng tôi đồng hành cùng cô dâu từ chiếc váy, lớp trang điểm đến không gian tiệc cưới.",
+    "about": "Studio váy cưới theo đuổi vẻ đẹp tối giản: phom dáng sạch, chất liệu tốt, đường may tỉ mỉ. Chúng tôi đồng hành cùng cô dâu từ chiếc váy, lớp trang điểm đến không gian tiệc cưới.",
     "instagram": "darla.deardarling",
     "phone": "0900 000 000",
     "address": "Địa chỉ showroom — cập nhật trong trang quản trị",
     "hours": "09:00 – 21:00, tất cả các ngày trong tuần",
-    "marquee": "Váy cưới,Makeup cô dâu,Rạp cưới,Dear Darling,Bộ sưu tập 2026"
+    "marquee": "Váy cưới may đo,Makeup cô dâu,Rạp cưới,Thử váy tại showroom,Bộ sưu tập 2026"
   },
   "categories": [
-    {"name": "Váy cưới", "slug": "vay-cuoi", "sort_order": 1},
-    {"name": "Váy đi bàn", "slug": "vay-di-ban", "sort_order": 2},
-    {"name": "Áo dài cưới", "slug": "ao-dai-cuoi", "sort_order": 3},
-    {"name": "Vest chú rể", "slug": "vest-chu-re", "sort_order": 4}
+    {
+      "name": "Váy cưới",
+      "slug": "vay-cuoi",
+      "sort_order": 1
+    },
+    {
+      "name": "Váy đi bàn",
+      "slug": "vay-di-ban",
+      "sort_order": 2
+    },
+    {
+      "name": "Áo dài cưới",
+      "slug": "ao-dai-cuoi",
+      "sort_order": 3
+    },
+    {
+      "name": "Vest chú rể",
+      "slug": "vest-chu-re",
+      "sort_order": 4
+    }
   ],
   "products": [
-    {"code": "DL-001", "name": "Amélie", "slug": "amelie", "category": "vay-cuoi", "silhouette": "Chữ A", "material": "Lụa satin Ý", "sizes": "XS – L (may đo theo số đo)", "price_rent": 8500000, "price_sale": 32000000, "price_note": "Giá thuê trọn gói 3 ngày", "short_desc": "Lụa satin trơn, cổ vuông, lưng thắt nơ dài.", "description": "Amélie là tinh thần Paris tối giản: phom chữ A mềm, cổ vuông thanh mảnh và chiếc nơ lụa buông dài phía sau. Phù hợp cô dâu yêu sự nhẹ nhàng, tổ chức tiệc trong nhà hoặc lễ nhà thờ.", "is_featured": true, "is_new": true, "sort_order": 1},
-    {"code": "DL-002", "name": "Céline", "slug": "celine", "category": "vay-cuoi", "silhouette": "Đuôi cá", "material": "Crepe co giãn, lót lụa", "sizes": "XS – L", "price_rent": 9500000, "price_sale": 36000000, "price_note": "Giá thuê trọn gói 3 ngày", "short_desc": "Đuôi cá ôm dáng, cổ yếm, lưng trần.", "description": "Céline tôn đường cong với phom đuôi cá ôm vừa vặn, cổ yếm cao và lưng trần sâu. Chất crepe dày rủ đẹp, gần như không nhăn khi di chuyển.", "is_featured": true, "is_new": false, "sort_order": 2},
-    {"code": "DL-003", "name": "Margaux", "slug": "margaux", "category": "vay-cuoi", "silhouette": "Xòe công chúa", "material": "Mikado & tulle Pháp", "sizes": "XS – XL", "price_rent": 12000000, "price_sale": null, "price_note": "Giá thuê trọn gói 3 ngày", "short_desc": "Xòe bồng, vạt mikado đứng phom, tà dài 2m.", "description": "Margaux dành cho lễ cưới lớn: chân váy mikado đứng phom, lớp tulle mỏng bên trong và tà dài 2m. Thân áo corset cài khuy bọc vải.", "is_featured": true, "is_new": true, "sort_order": 3},
-    {"code": "DL-004", "name": "Odette", "slug": "odette", "category": "vay-cuoi", "silhouette": "Suông", "material": "Lụa organza", "sizes": "XS – L", "price_rent": 7500000, "price_sale": 26000000, "price_note": "Giá thuê trọn gói 3 ngày", "short_desc": "Suông nhẹ, tay phồng organza, hợp chụp ngoại cảnh.", "description": "Odette nhẹ như gió với phom suông, tay phồng organza trong và chân váy hai lớp. Lựa chọn lý tưởng cho chụp ảnh ngoại cảnh và tiệc cưới ngoài trời.", "is_featured": true, "is_new": false, "sort_order": 4},
-    {"code": "DL-011", "name": "Colette", "slug": "colette", "category": "vay-di-ban", "silhouette": "Midi", "material": "Satin champagne", "sizes": "S – L", "price_rent": 2500000, "price_sale": 9000000, "price_note": "Giá thuê 1 ngày", "short_desc": "Váy midi satin màu champagne, cổ đổ.", "description": "Colette là chiếc váy đi bàn gọn gàng, cổ đổ mềm, dài qua gối để cô dâu dễ di chuyển chào khách.", "is_featured": false, "is_new": true, "sort_order": 5},
-    {"code": "DL-012", "name": "Noémie", "slug": "noemie", "category": "vay-di-ban", "silhouette": "Chữ A ngắn", "material": "Tweed trắng ngà", "sizes": "S – L", "price_rent": 2200000, "price_sale": null, "price_note": "Giá thuê 1 ngày", "short_desc": "Set tweed ngắn, khuy ngọc trai.", "description": "Noémie mang hơi thở cổ điển Pháp với chất tweed trắng ngà, khuy ngọc trai và phom chữ A ngắn trẻ trung.", "is_featured": false, "is_new": false, "sort_order": 6},
-    {"code": "DL-021", "name": "Ngọc Lan", "slug": "ngoc-lan", "category": "ao-dai-cuoi", "silhouette": "Áo dài truyền thống", "material": "Gấm thêu tay", "sizes": "May đo", "price_rent": 3500000, "price_sale": 12000000, "price_note": "Giá thuê 1 ngày, kèm khăn đóng", "short_desc": "Gấm trắng ngà thêu hoa ngọc lan.", "description": "Áo dài Ngọc Lan may từ gấm trắng ngà, thêu tay hoa ngọc lan dọc thân, kèm khăn đóng cùng tông — dành cho lễ gia tiên.", "is_featured": false, "is_new": false, "sort_order": 7},
-    {"code": "DL-031", "name": "Laurent", "slug": "laurent", "category": "vest-chu-re", "silhouette": "Slim fit", "material": "Len pha Ý", "sizes": "S – XXL", "price_rent": 2000000, "price_sale": 8500000, "price_note": "Giá thuê trọn gói 3 ngày", "short_desc": "Vest đen ve sa-tanh, kèm nơ.", "description": "Laurent là bộ vest đen kinh điển, ve áo sa-tanh bóng nhẹ, may slim fit. Kèm sơ mi trắng và nơ cổ.", "is_featured": false, "is_new": false, "sort_order": 8}
+    {
+      "code": "DL-001",
+      "name": "Amélie",
+      "slug": "amelie",
+      "category": "vay-cuoi",
+      "silhouette": "Chữ A",
+      "material": "Lụa satin Ý",
+      "sizes": "XS – L (may đo theo số đo)",
+      "price_rent": 8500000,
+      "price_sale": 32000000,
+      "price_note": "Giá thuê trọn gói 3 ngày",
+      "short_desc": "Lụa satin trơn, cổ vuông, lưng thắt nơ dài.",
+      "description": "Amélie là tinh thần Paris tối giản: phom chữ A mềm, cổ vuông thanh mảnh và chiếc nơ lụa buông dài phía sau. Phù hợp cô dâu yêu sự nhẹ nhàng, tổ chức tiệc trong nhà hoặc lễ nhà thờ.",
+      "is_featured": true,
+      "is_new": true,
+      "sort_order": 1
+    },
+    {
+      "code": "DL-002",
+      "name": "Céline",
+      "slug": "celine",
+      "category": "vay-cuoi",
+      "silhouette": "Đuôi cá",
+      "material": "Crepe co giãn, lót lụa",
+      "sizes": "XS – L",
+      "price_rent": 9500000,
+      "price_sale": 36000000,
+      "price_note": "Giá thuê trọn gói 3 ngày",
+      "short_desc": "Đuôi cá ôm dáng, cổ yếm, lưng trần.",
+      "description": "Céline tôn đường cong với phom đuôi cá ôm vừa vặn, cổ yếm cao và lưng trần sâu. Chất crepe dày rủ đẹp, gần như không nhăn khi di chuyển.",
+      "is_featured": true,
+      "is_new": false,
+      "sort_order": 2
+    },
+    {
+      "code": "DL-003",
+      "name": "Margaux",
+      "slug": "margaux",
+      "category": "vay-cuoi",
+      "silhouette": "Xòe công chúa",
+      "material": "Mikado & tulle Pháp",
+      "sizes": "XS – XL",
+      "price_rent": 12000000,
+      "price_sale": null,
+      "price_note": "Giá thuê trọn gói 3 ngày",
+      "short_desc": "Xòe bồng, vạt mikado đứng phom, tà dài 2m.",
+      "description": "Margaux dành cho lễ cưới lớn: chân váy mikado đứng phom, lớp tulle mỏng bên trong và tà dài 2m. Thân áo corset cài khuy bọc vải.",
+      "is_featured": true,
+      "is_new": true,
+      "sort_order": 3
+    },
+    {
+      "code": "DL-004",
+      "name": "Odette",
+      "slug": "odette",
+      "category": "vay-cuoi",
+      "silhouette": "Suông",
+      "material": "Lụa organza",
+      "sizes": "XS – L",
+      "price_rent": 7500000,
+      "price_sale": 26000000,
+      "price_note": "Giá thuê trọn gói 3 ngày",
+      "short_desc": "Suông nhẹ, tay phồng organza, hợp chụp ngoại cảnh.",
+      "description": "Odette nhẹ như gió với phom suông, tay phồng organza trong và chân váy hai lớp. Lựa chọn lý tưởng cho chụp ảnh ngoại cảnh và tiệc cưới ngoài trời.",
+      "is_featured": true,
+      "is_new": false,
+      "sort_order": 4
+    },
+    {
+      "code": "DL-011",
+      "name": "Colette",
+      "slug": "colette",
+      "category": "vay-di-ban",
+      "silhouette": "Midi",
+      "material": "Satin champagne",
+      "sizes": "S – L",
+      "price_rent": 2500000,
+      "price_sale": 9000000,
+      "price_note": "Giá thuê 1 ngày",
+      "short_desc": "Váy midi satin màu champagne, cổ đổ.",
+      "description": "Colette là chiếc váy đi bàn gọn gàng, cổ đổ mềm, dài qua gối để cô dâu dễ di chuyển chào khách.",
+      "is_featured": false,
+      "is_new": true,
+      "sort_order": 5
+    },
+    {
+      "code": "DL-012",
+      "name": "Noémie",
+      "slug": "noemie",
+      "category": "vay-di-ban",
+      "silhouette": "Chữ A ngắn",
+      "material": "Tweed trắng ngà",
+      "sizes": "S – L",
+      "price_rent": 2200000,
+      "price_sale": null,
+      "price_note": "Giá thuê 1 ngày",
+      "short_desc": "Set tweed ngắn, khuy ngọc trai.",
+      "description": "Noémie mang hơi thở cổ điển Pháp với chất tweed trắng ngà, khuy ngọc trai và phom chữ A ngắn trẻ trung.",
+      "is_featured": false,
+      "is_new": false,
+      "sort_order": 6
+    },
+    {
+      "code": "DL-021",
+      "name": "Ngọc Lan",
+      "slug": "ngoc-lan",
+      "category": "ao-dai-cuoi",
+      "silhouette": "Áo dài truyền thống",
+      "material": "Gấm thêu tay",
+      "sizes": "May đo",
+      "price_rent": 3500000,
+      "price_sale": 12000000,
+      "price_note": "Giá thuê 1 ngày, kèm khăn đóng",
+      "short_desc": "Gấm trắng ngà thêu hoa ngọc lan.",
+      "description": "Áo dài Ngọc Lan may từ gấm trắng ngà, thêu tay hoa ngọc lan dọc thân, kèm khăn đóng cùng tông — dành cho lễ gia tiên.",
+      "is_featured": false,
+      "is_new": false,
+      "sort_order": 7
+    },
+    {
+      "code": "DL-031",
+      "name": "Laurent",
+      "slug": "laurent",
+      "category": "vest-chu-re",
+      "silhouette": "Slim fit",
+      "material": "Len pha Ý",
+      "sizes": "S – XXL",
+      "price_rent": 2000000,
+      "price_sale": 8500000,
+      "price_note": "Giá thuê trọn gói 3 ngày",
+      "short_desc": "Vest đen ve sa-tanh, kèm nơ.",
+      "description": "Laurent là bộ vest đen kinh điển, ve áo sa-tanh bóng nhẹ, may slim fit. Kèm sơ mi trắng và nơ cổ.",
+      "is_featured": false,
+      "is_new": false,
+      "sort_order": 8
+    }
   ],
   "services": [
-    {"kind": "makeup", "name": "Makeup cô dâu ngày cưới", "price_from": 2500000, "price_note": "Trọn buổi sáng hoặc chiều", "description": "Trang điểm và làm tóc theo phong cách trong trẻo, bền màu suốt buổi lễ.", "features": ["Trang điểm + làm tóc", "Mi giả & phụ kiện tóc", "Dặm lại 1 lần"], "sort_order": 1},
-    {"kind": "makeup", "name": "Makeup theo trọn ngày", "price_from": 4500000, "price_note": "Đi theo từ sáng đến tiệc tối", "description": "Chuyên viên đi cùng cô dâu suốt ngày cưới, đổi layout tóc cho từng phần lễ.", "features": ["2 layout tóc", "Dặm không giới hạn", "Makeup mẹ cô dâu -30%"], "sort_order": 2},
-    {"kind": "venue", "name": "Rạp cưới tối giản", "price_from": 15000000, "price_note": "Rạp 6 – 8 bàn", "description": "Rạp tông trắng – be, khung sắt sơn tĩnh điện, hoa tươi theo mùa.", "features": ["Cổng hoa tươi", "Bàn gia tiên", "Lắp đặt & tháo dỡ"], "sort_order": 3},
-    {"kind": "venue", "name": "Rạp cưới cao cấp", "price_from": 35000000, "price_note": "Rạp 15 – 20 bàn", "description": "Không gian tiệc trọn gói: rạp, bàn ghế, khăn trải, ánh sáng và hoa trang trí.", "features": ["Thiết kế 3D trước khi dựng", "Đèn & âm thanh", "Hoa tươi toàn rạp"], "sort_order": 4}
+    {
+      "kind": "makeup",
+      "name": "Makeup cô dâu ngày cưới",
+      "price_from": 2500000,
+      "price_note": "Trọn buổi sáng hoặc chiều",
+      "description": "Trang điểm và làm tóc theo phong cách trong trẻo, bền màu suốt buổi lễ.",
+      "features": [
+        "Trang điểm + làm tóc",
+        "Mi giả & phụ kiện tóc",
+        "Dặm lại 1 lần"
+      ],
+      "sort_order": 1
+    },
+    {
+      "kind": "makeup",
+      "name": "Makeup theo trọn ngày",
+      "price_from": 4500000,
+      "price_note": "Đi theo từ sáng đến tiệc tối",
+      "description": "Chuyên viên đi cùng cô dâu suốt ngày cưới, đổi layout tóc cho từng phần lễ.",
+      "features": [
+        "2 layout tóc",
+        "Dặm không giới hạn",
+        "Makeup mẹ cô dâu -30%"
+      ],
+      "sort_order": 2
+    },
+    {
+      "kind": "venue",
+      "name": "Rạp cưới tối giản",
+      "price_from": 15000000,
+      "price_note": "Rạp 6 – 8 bàn",
+      "description": "Rạp tông trắng – be, khung sắt sơn tĩnh điện, hoa tươi theo mùa.",
+      "features": [
+        "Cổng hoa tươi",
+        "Bàn gia tiên",
+        "Lắp đặt & tháo dỡ"
+      ],
+      "sort_order": 3
+    },
+    {
+      "kind": "venue",
+      "name": "Rạp cưới cao cấp",
+      "price_from": 35000000,
+      "price_note": "Rạp 15 – 20 bàn",
+      "description": "Không gian tiệc trọn gói: rạp, bàn ghế, khăn trải, ánh sáng và hoa trang trí.",
+      "features": [
+        "Thiết kế 3D trước khi dựng",
+        "Đèn & âm thanh",
+        "Hoa tươi toàn rạp"
+      ],
+      "sort_order": 4
+    }
   ],
   "offers": [
-    {"title": "Combo Dear Darling", "highlight": "-20%", "description": "Thuê váy cưới + makeup ngày cưới + rạp tối giản trong cùng một gói.", "terms": "Áp dụng cho lịch cưới đến hết 06/2027.", "end_date": "2027-06-30", "sort_order": 1},
-    {"title": "Tặng váy đi bàn", "highlight": "Miễn phí", "description": "Thuê váy cưới từ 9.500.000đ được tặng 1 váy đi bàn bất kỳ.", "terms": "Không cộng dồn với ưu đãi khác.", "end_date": null, "sort_order": 2},
-    {"title": "Đặt sớm 3 tháng", "highlight": "-10%", "description": "Đặt lịch thử váy và cọc trước ngày cưới từ 3 tháng.", "terms": "Áp dụng cho tất cả váy cưới.", "end_date": null, "sort_order": 3}
+    {
+      "title": "Combo trọn gói",
+      "highlight": "-20%",
+      "description": "Thuê váy cưới + makeup ngày cưới + rạp tối giản trong cùng một gói.",
+      "terms": "Áp dụng cho lịch cưới đến hết 06/2027.",
+      "end_date": "2027-06-30",
+      "sort_order": 1
+    },
+    {
+      "title": "Tặng váy đi bàn",
+      "highlight": "Miễn phí",
+      "description": "Thuê váy cưới từ 9.500.000đ được tặng 1 váy đi bàn bất kỳ.",
+      "terms": "Không cộng dồn với ưu đãi khác.",
+      "end_date": null,
+      "sort_order": 2
+    },
+    {
+      "title": "Đặt sớm 3 tháng",
+      "highlight": "-10%",
+      "description": "Đặt lịch thử váy và cọc trước ngày cưới từ 3 tháng.",
+      "terms": "Áp dụng cho tất cả váy cưới.",
+      "end_date": null,
+      "sort_order": 3
+    }
   ]
 }

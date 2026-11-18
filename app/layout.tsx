@@ -11,7 +11,7 @@ import '@fontsource/be-vietnam-pro/500.css'
 import '@fontsource/be-vietnam-pro/600.css'
 
 export const metadata: Metadata = {
-  title: { default: 'Darla — Dear Darling | Váy cưới', template: '%s | Darla Dear Darling' },
+  title: { default: 'Darla — Dear Darling | Váy cưới', template: '%s | Darla' },
   description: 'Bộ sưu tập váy cưới, makeup cô dâu và rạp cưới theo phong cách châu Âu tối giản.',
 }
 

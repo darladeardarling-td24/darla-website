@@ -1,6 +1,6 @@
 /** Dải chữ chạy ngang nền đen — lấy cảm hứng từ ảnh mẫu */
 export default function Marquee({ text }: { text: string | null }) {
-  const items = (text || 'Váy cưới,Makeup cô dâu,Rạp cưới,Dear Darling').split(',').map((s) => s.trim()).filter(Boolean)
+  const items = (text || 'Váy cưới may đo,Makeup cô dâu,Rạp cưới,Thử váy tại showroom').split(',').map((s) => s.trim()).filter(Boolean)
   const row = [...items, ...items, ...items]
   return (
     <div className="overflow-hidden bg-ink py-3.5 text-veil sm:py-4" aria-hidden>

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { refreshSite } from '@/app/admin/actions'
-import ImageField from '@/components/admin/ImageField'
+import Link from 'next/link'
 import { useStaff } from '@/components/admin/StaffContext'
 import { Card, Field, Input, PageHead, Textarea, useToast } from '@/components/admin/ui'
 import { supabaseBrowser } from '@/lib/supabase/client'
@@ -55,7 +55,7 @@ export default function SettingsAdmin() {
           <Field label="Dòng mùa / bộ sưu tập" hint="Hiện ở góc trên và trên ảnh bìa.">
             <Input {...txt('season_label')} />
           </Field>
-          <Field label="Câu tiêu đề">
+          <Field label="Câu tiêu đề" hint="Chữ lớn đè trên ảnh đầu trang. Nên ngắn, khoảng 5–8 chữ.">
             <Input {...txt('hero_title')} />
           </Field>
           <Field label="Đoạn giới thiệu dưới tiêu đề">
@@ -67,10 +67,10 @@ export default function SettingsAdmin() {
           <Field label="Dải chữ chạy" hint="Các cụm cách nhau bằng dấu phẩy.">
             <Input {...txt('marquee')} />
           </Field>
-          <div>
-            <p className="mb-1.5 text-[0.8125rem] font-medium">Ảnh trong tiêu đề “Dear Darling”</p>
-            <ImageField value={s.hero_image ? [s.hero_image] : []} onChange={(v) => set('hero_image', v[0] ?? null)} folder="site" max={1} />
-          </div>
+          <p className="meta">
+            Ảnh trên trang chủ được đổi trong mục{' '}
+            <Link href="/admin/trang-chu" className="text-ink underline underline-offset-4">Ảnh trang chủ</Link>.
+          </p>
         </Card>
         <Card className="space-y-4 self-start">
           <h2 className="font-display text-[1.375rem]">Liên hệ</h2>

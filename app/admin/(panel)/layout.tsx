@@ -8,6 +8,7 @@ import type { Profile } from '@/lib/types'
 
 const NAV = [
   { href: '/admin', label: 'Tổng quan' },
+  { href: '/admin/trang-chu', label: 'Ảnh trang chủ' },
   { href: '/admin/san-pham', label: 'Sản phẩm' },
   { href: '/admin/danh-muc', label: 'Danh mục' },
   { href: '/admin/uu-dai', label: 'Ưu đãi' },

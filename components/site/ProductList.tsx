@@ -5,11 +5,11 @@ import { shortPrice } from '@/lib/format'
 import type { Category, Product } from '@/lib/types'
 import Media from './Media'
 
-type Props = { products: Product[]; categories: Category[]; filters?: boolean }
+type Props = { products: Product[]; categories: Category[]; filters?: boolean; initialView?: 'list' | 'grid' }
 
-export default function ProductList({ products, categories, filters = true }: Props) {
+export default function ProductList({ products, categories, filters = true, initialView = 'list' }: Props) {
   const [cat, setCat] = useState<string>('all')
-  const [view, setView] = useState<'list' | 'grid'>('list')
+  const [view, setView] = useState<'list' | 'grid'>(initialView)
   const [hover, setHover] = useState<Product | null>(null)
   const preview = useRef<HTMLDivElement>(null)
 

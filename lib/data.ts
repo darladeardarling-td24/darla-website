@@ -2,6 +2,7 @@ import 'server-only'
 import { createClient } from '@supabase/supabase-js'
 import demo from './demo-data.json'
 import { SUPABASE_ANON_KEY, SUPABASE_URL, hasSupabase } from './supabase/env'
+import type { HomeMedia, HomeSlot } from './home-slots'
 import type { Category, Offer, Product, Service, Settings } from './types'
 
 /**
@@ -77,4 +78,10 @@ export function getOffers() {
 export function activeOffers(offers: Offer[]) {
   const today = new Date().toISOString().slice(0, 10)
   return offers.filter((o) => (!o.end_date || o.end_date >= today) && (!o.start_date || o.start_date <= today))
+}
+
+/** Ảnh trang chủ theo từng vị trí (bảng home_media) */
+export async function getHomeMedia(): Promise<Partial<Record<HomeSlot, HomeMedia>>> {
+  const rows = await safe<HomeMedia[]>(() => db!.from('home_media').select('slot,image,focus,caption'), [])
+  return Object.fromEntries(rows.filter((r) => r.image?.url).map((r) => [r.slot, r]))
 }

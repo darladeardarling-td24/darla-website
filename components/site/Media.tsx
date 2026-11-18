@@ -1,3 +1,4 @@
+import { focusClass, type Focus } from '@/lib/home-slots'
 import type { Img } from '@/lib/types'
 import DressSketch from './DressSketch'
 
@@ -8,10 +9,11 @@ type Props = {
   className?: string
   tone?: 'stone' | 'veil' | 'dark'
   eager?: boolean
+  focus?: Focus | null
 }
 
 /** Ảnh sản phẩm; nếu chưa có ảnh thì hiện hình váy nét mảnh trên nền be */
-export default function Media({ img, alt, variant = 'thumb', className = '', tone = 'stone', eager }: Props) {
+export default function Media({ img, alt, variant = 'thumb', className = '', tone = 'stone', eager, focus }: Props) {
   if (img?.url) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -20,7 +22,7 @@ export default function Media({ img, alt, variant = 'thumb', className = '', ton
         alt={alt}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
-        className={`h-full w-full object-cover ${className}`}
+        className={`h-full w-full object-cover ${focusClass(focus)} ${className}`}
       />
     )
   }
