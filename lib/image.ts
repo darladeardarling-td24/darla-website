@@ -47,9 +47,34 @@ async function encode(src: ImageBitmap | HTMLImageElement, max: number, quality:
 
 export type UploadResult = Img & { originalKB: number; savedKB: number }
 
+/** Đo độ sáng vùng thường đặt chữ (nửa trái + phần dưới ảnh) để chọn màu chữ phù hợp */
+function suggestText(src: ImageBitmap | HTMLImageElement): 'sand' | 'veil' {
+  try {
+    const c = document.createElement('canvas')
+    c.width = 48
+    c.height = 48
+    const ctx = c.getContext('2d', { willReadFrequently: true })!
+    ctx.drawImage(src, 0, 0, 48, 48)
+    const d = ctx.getImageData(0, 0, 48, 48).data
+    let sum = 0
+    let n = 0
+    for (let y = 0; y < 48; y++)
+      for (let x = 0; x < 48; x++) {
+        if (x > 26 && y < 28) continue // bỏ góc trên bên phải (thường là chủ thể)
+        const i = (y * 48 + x) * 4
+        sum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255
+        n++
+      }
+    return sum / n > 0.58 ? 'sand' : 'veil'
+  } catch {
+    return 'veil'
+  }
+}
+
 export async function compressAndUpload(file: File, folder: string): Promise<UploadResult> {
   if (!file.type.startsWith('image/')) throw new Error(`"${file.name}" không phải là ảnh.`)
   const bmp = await loadBitmap(file)
+  const text = suggestText(bmp)
   const [full, thumb] = await Promise.all([encode(bmp, FULL.max, FULL.quality), encode(bmp, THUMB.max, THUMB.quality)])
   if ('close' in bmp) bmp.close()
   const ext = full.type === 'image/webp' ? 'webp' : 'jpg'
@@ -68,6 +93,7 @@ export async function compressAndUpload(file: File, folder: string): Promise<Upl
   return {
     url: pub(paths.full),
     thumb: pub(paths.thumb),
+    text,
     originalKB: Math.round(file.size / 1024),
     savedKB: Math.round(full.size / 1024),
   }

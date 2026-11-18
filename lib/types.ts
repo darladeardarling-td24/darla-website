@@ -1,4 +1,9 @@
-export type Img = { url: string; thumb: string }
+/**
+ * Ảnh đã tải lên. fx/fy: điểm lấy nét (0–100%) khi ảnh bị cắt cho vừa khung.
+ * text: màu chữ khi đặt chữ lên ảnh — 'sand' (chữ be, ảnh sáng), 'ink' (chữ đen, ảnh sáng) hoặc 'veil' (chữ trắng, ảnh tối).
+ */
+export type Img = { url: string; thumb: string; fx?: number; fy?: number; text?: TextTone }
+export type TextTone = 'sand' | 'ink' | 'veil'
 export type Status = 'published' | 'draft'
 
 export type Settings = {

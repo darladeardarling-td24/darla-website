@@ -5,9 +5,21 @@ import { useEffect, useState } from 'react'
 import InstaButton from './InstaButton'
 import { NAV } from './nav'
 
-export default function Header({ season, instagram }: { season: string | null; instagram: string | null }) {
+type Tone = 'sand' | 'ink' | 'veil'
+type Props = { season: string | null; instagram: string | null; heroTone: { desktop: Tone; mobile: Tone } }
+
+// Màu thanh đầu trang khi nằm đè trên ảnh trang chủ (điện thoại / từ sm trở lên)
+const LINE = { sand: 'bg-latte', ink: 'bg-ink', veil: 'bg-veil' }
+const LINE_SM = { sand: 'sm:bg-latte', ink: 'sm:bg-ink', veil: 'sm:bg-veil' }
+const TEXT_SM = { sand: 'sm:text-mocha', ink: 'sm:text-ink', veil: 'sm:text-veil' }
+const logo = (t: Tone) => (t === 'sand' ? '/logo-latte.png' : t === 'ink' ? '/logo-black.png' : '/logo-white.png')
+
+export default function Header({ season, instagram, heroTone }: Props) {
   const [open, setOpen] = useState(false)
   const path = usePathname()
+  const overlay = path === '/'
+  const m = overlay ? heroTone.mobile : 'ink'
+  const d = overlay ? heroTone.desktop : 'ink'
 
   useEffect(() => setOpen(false), [path])
   useEffect(() => {
@@ -18,14 +30,16 @@ export default function Header({ season, instagram }: { season: string | null; i
   }, [open])
 
   return (
-    <header className="relative z-40">
+    <header className={overlay ? 'absolute inset-x-0 top-0 z-40' : 'relative z-40'}>
       <div className="wrap flex items-center justify-between gap-6 py-5 sm:py-7">
         <Link href="/" aria-label="Darla — trang chủ" className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-black.png" alt="Darla Dear Darling" className="h-9 w-auto sm:h-11" />
+          <img src={logo(m)} alt="Darla Dear Darling" className="h-9 w-auto sm:hidden" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logo(d)} alt="" aria-hidden className="hidden h-11 w-auto sm:block" />
         </Link>
 
-        <div className="hidden items-start gap-2.5 md:flex">
+        <div className={`hidden items-start gap-2.5 ${overlay ? '' : 'md:flex'}`}>
           <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-ink" />
           <p className="text-[0.8125rem] leading-[1.35]">
             {season}
@@ -36,9 +50,9 @@ export default function Header({ season, instagram }: { season: string | null; i
           </p>
         </div>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Điều hướng chính">
+        <nav className={`hidden items-center gap-8 lg:flex ${TEXT_SM[d]}`} aria-label="Điều hướng chính">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className={`text-[0.9375rem] hover:text-taupe ${path === n.href ? 'underline underline-offset-[6px]' : ''}`}>
+            <Link key={n.href} href={n.href} className={`text-[0.9375rem] underline-offset-[6px] transition-opacity hover:opacity-60 ${path === n.href ? 'underline' : ''}`}>
               {n.label}
             </Link>
           ))}
@@ -50,9 +64,9 @@ export default function Header({ season, instagram }: { season: string | null; i
           aria-label="Mở menu"
           aria-expanded={open}
         >
-          <span className="h-px w-12 bg-ink" />
-          <span className="h-px w-12 bg-ink" />
-          <span className="h-px w-8 bg-ink" />
+          <span className={`h-px w-12 ${LINE[m]} ${LINE_SM[d]}`} />
+          <span className={`h-px w-12 ${LINE[m]} ${LINE_SM[d]}`} />
+          <span className={`h-px w-8 ${LINE[m]} ${LINE_SM[d]}`} />
         </button>
       </div>
 

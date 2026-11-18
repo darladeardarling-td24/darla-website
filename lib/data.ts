@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import demo from './demo-data.json'
 import { SUPABASE_ANON_KEY, SUPABASE_URL, hasSupabase } from './supabase/env'
 import type { HomeMedia, HomeSlot } from './home-slots'
-import type { Category, Offer, Product, Service, Settings } from './types'
+import type { Category, Offer, Product, Service, Settings, TextTone } from './types'
 
 /**
  * Dữ liệu cho trang khách. Kết quả được lưu đệm 60 giây; khi nhân sự lưu nội dung
@@ -84,4 +84,18 @@ export function activeOffers(offers: Offer[]) {
 export async function getHomeMedia(): Promise<Partial<Record<HomeSlot, HomeMedia>>> {
   const rows = await safe<HomeMedia[]>(() => db!.from('home_media').select('slot,image,focus,caption'), [])
   return Object.fromEntries(rows.filter((r) => r.image?.url).map((r) => [r.slot, r]))
+}
+
+
+/** Ảnh đầu trang (máy tính, điện thoại, ảnh chi tiết) kèm màu chữ phù hợp — dùng cho trang chủ và thanh đầu trang */
+export async function getHero() {
+  const [media, products, s] = await Promise.all([getHomeMedia(), getProducts(), getSettings()])
+  const featured = products.filter((p) => p.is_featured)
+  const firstImg = (featured.length ? featured : products).flatMap((p) => p.images)[0] ?? products.flatMap((p) => p.images)[0] ?? null
+  const hero: HomeMedia = media.hero ?? { slot: 'hero', image: firstImg, focus: 'center', caption: null }
+  const mobile: HomeMedia = media.hero_mobile ?? hero
+  const detail: HomeMedia | null =
+    media.hero_detail ?? (s.hero_image ? { slot: 'hero_detail', image: s.hero_image, focus: 'center', caption: null } : null)
+  const tone = (m: HomeMedia): TextTone => m.image?.text ?? 'veil'
+  return { hero, mobile, detail, tone: { desktop: tone(hero), mobile: tone(mobile) } }
 }

@@ -23,6 +23,7 @@ export default function Media({ img, alt, variant = 'thumb', className = '', ton
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         className={`h-full w-full object-cover ${focusClass(focus)} ${className}`}
+        style={img.fx !== undefined && img.fy !== undefined ? { objectPosition: `${img.fx}% ${img.fy}%` } : undefined}
       />
     )
   }

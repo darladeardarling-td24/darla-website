@@ -10,6 +10,8 @@ module.exports = {
         taupe: '#766B5F',    // chữ phụ
         mink: '#A89A88',     // đường kẻ, viền
         ink: '#000000',      // đen logo
+        latte: '#8C7558',    // be latte: logo & tiêu đề trên ảnh sáng
+        mocha: '#7D6650',    // be đậm: chữ nhỏ & nút trên ảnh sáng
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],

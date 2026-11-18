@@ -9,13 +9,13 @@ export const HOME_SLOTS: { slot: HomeSlot; label: string; hint: string; ratio: s
   {
     slot: 'hero',
     label: 'Ảnh lớn đầu trang',
-    hint: 'Ảnh ngang, càng đẹp càng tốt — đây là thứ khách thấy đầu tiên. Tiêu đề nằm đè ở góc dưới bên trái, nên để cô dâu ở giữa hoặc lệch phải.',
+    hint: 'Ảnh ngang tràn toàn màn hình — thứ khách thấy đầu tiên. Chữ nằm bên trái (máy tính) và phía dưới (điện thoại), nên chọn ảnh cô dâu ở giữa hoặc lệch phải, nền thoáng.',
     ratio: '16 / 9',
   },
   {
     slot: 'hero_mobile',
     label: 'Ảnh đầu trang trên điện thoại',
-    hint: 'Ảnh dọc cho màn hình điện thoại. Để trống thì web tự cắt từ ảnh lớn ở trên.',
+    hint: 'Không bắt buộc. Để trống thì web tự cắt từ ảnh lớn theo điểm bạn chọn. Chỉ cần khi muốn dùng một ảnh dọc khác cho điện thoại.',
     ratio: '4 / 5',
     optional: true,
   },
