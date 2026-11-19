@@ -144,25 +144,26 @@ function SlotCard({ def, row, onSave }: { def: (typeof HOME_SLOTS)[number]; row:
           <div className="grid gap-4 md:grid-cols-2">
             {isHero && (
               <div>
-                <p className="mb-1.5 text-[0.8125rem] font-medium">Màu chữ phần mở đầu</p>
-                <div className="inline-flex rounded-full bg-oyster p-1" role="radiogroup" aria-label="Màu chữ phần mở đầu">
+                <p className="mb-1.5 text-[0.8125rem] font-medium">Màu logo, menu và chữ</p>
+                <div className="inline-flex rounded-full bg-oyster p-1" role="radiogroup" aria-label="Màu logo, menu và chữ">
                   {([
-                    ['sand', 'Chữ be'],
-                    ['ink', 'Chữ đen'],
+                    ['sand', 'Be'],
+                    ['ink', 'Đen'],
+                    ['veil', 'Trắng (ảnh tối)'],
                   ] as const).map(([v, l]) => (
                     <button
                       key={v}
                       type="button"
                       role="radio"
-                      aria-checked={(img.text === 'ink' ? 'ink' : 'sand') === v}
+                      aria-checked={(img.text ?? 'sand') === v}
                       onClick={() => onSave({ image: { ...img, text: v } })}
-                      className={`rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-colors ${(img.text === 'ink' ? 'ink' : 'sand') === v ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
+                      className={`rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-colors ${(img.text ?? 'sand') === v ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
                     >
                       {l}
                     </button>
                   ))}
                 </div>
-                <p className="meta mt-1.5">Tiêu đề, đoạn giới thiệu và nút nằm ngay dưới ảnh bìa.</p>
+                <p className="meta mt-1.5">Logo và menu nằm trên ảnh; tiêu đề nằm dưới ảnh. Ảnh sáng nên chọn Be hoặc Đen, ảnh tối chọn Trắng (khi đó chữ dưới ảnh vẫn dùng màu be).</p>
               </div>
             )}
             <label className="block">

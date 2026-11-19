@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import HeroFrame from '@/components/site/HeroFrame'
 import InstaButton from '@/components/site/InstaButton'
 import Marquee from '@/components/site/Marquee'
 import Media from '@/components/site/Media'
@@ -54,20 +55,23 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ---------- Ảnh bìa: để trơn, không chữ; mép dưới tan nhẹ vào nền be ---------- */}
+      {/* ---------- Ảnh bìa: khung bo góc, logo & menu nằm trên ảnh, chuyển động nhẹ khi cuộn ---------- */}
       <section aria-label="Ảnh bìa">
-        <div className="relative h-[64svh] min-h-[420px] overflow-hidden sm:h-[76svh] sm:max-h-[920px] sm:min-h-[560px]">
-          <div className="absolute inset-0 hidden sm:block">
-            <Media img={hero.hero.image} focus={hero.hero.focus} alt={hero.hero.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
-          </div>
-          <div className="absolute inset-0 sm:hidden">
-            <Media img={hero.mobile.image} focus={hero.mobile.focus} alt={hero.mobile.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
-          </div>
-          <div className="absolute inset-x-0 bottom-0 h-[16%] bg-gradient-to-t from-oyster via-oyster/50 to-transparent" />
+        <div className="px-2 pt-2 sm:px-3 sm:pt-3">
+          <HeroFrame className="h-[78svh] min-h-[480px] bg-stone sm:h-[86svh] sm:max-h-[980px] sm:min-h-[600px]">
+            <div className="absolute inset-0 hidden sm:block">
+              <Media img={hero.hero.image} focus={hero.hero.focus} alt={hero.hero.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
+            </div>
+            <div className="absolute inset-0 sm:hidden">
+              <Media img={hero.mobile.image} focus={hero.mobile.focus} alt={hero.mobile.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
+            </div>
+            {/* Lớp sáng/tối rất nhẹ ở mép trên để logo và menu luôn rõ */}
+            <div className={`absolute inset-x-0 top-0 h-40 bg-gradient-to-b to-transparent ${hero.tone.desktop === 'veil' ? 'from-black/35' : 'from-white/45'}`} />
+          </HeroFrame>
         </div>
 
         {/* Chữ đặt dưới ảnh, kiểu trang mở đầu tạp chí */}
-        <div className="wrap relative pb-16 pt-6 sm:pb-24 sm:pt-8">
+        <div className="hero-rise wrap relative pb-16 pt-8 sm:pb-24 sm:pt-12">
           <div className={`flex items-center justify-between gap-4 border-b pb-4 text-[0.8125rem] ${tone.rule} ${tone.sub}`}>
             <span className="flex items-center gap-3">
               <span className="h-px w-8 bg-current" />

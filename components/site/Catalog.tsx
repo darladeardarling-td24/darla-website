@@ -215,7 +215,7 @@ export default function Catalog({ products, categories, collections, attributes 
       )}
 
       {/* Thanh công cụ */}
-      <div className="sticky top-0 z-20 -mx-5 mt-8 flex flex-wrap items-center gap-2 bg-oyster/95 px-5 py-3 backdrop-blur sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:backdrop-blur-0">
+      <div className="sticky top-[68px] z-20 -mx-5 mt-8 flex flex-wrap items-center gap-2 bg-oyster/95 px-5 py-3 backdrop-blur sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:backdrop-blur-0">
         <button onClick={() => setPanel(!panel)} aria-expanded={panel} className={chip(panel || activeChips.length > 0)}>
           Bộ lọc{activeChips.length ? ` (${activeChips.length})` : ''}
         </button>

@@ -34,6 +34,12 @@
   html { scroll-behavior: auto; }
 }
 
+/* Phần chữ dưới ảnh bìa: hiện lên một lần khi mở trang */
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.hero-rise > * { animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-rise > *:nth-child(2) { animation-delay: 0.12s; }
+@media (prefers-reduced-motion: reduce) { .hero-rise > * { animation: none; } }
+
 /* Chữ viền (outline) cho con số lớn */
 .text-outline { color: transparent; -webkit-text-stroke: 1px #000; }
 .text-outline-veil { color: transparent; -webkit-text-stroke: 1px #F7F3EC; }

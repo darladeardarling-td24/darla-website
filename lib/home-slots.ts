@@ -9,7 +9,7 @@ export const HOME_SLOTS: { slot: HomeSlot; label: string; hint: string; ratio: s
   {
     slot: 'hero',
     label: 'Ảnh lớn đầu trang',
-    hint: 'Ảnh ngang tràn chiều ngang màn hình, để trơn không có chữ đè lên — thứ khách thấy đầu tiên. Tiêu đề và nút nằm ngay bên dưới ảnh.',
+    hint: 'Ảnh ngang trong khung bo góc gần kín màn hình — thứ khách thấy đầu tiên. Logo và menu nằm trên mép trên của ảnh, tiêu đề nằm bên dưới. Nên chọn ảnh có khoảng trống phía trên đầu cô dâu.',
     ratio: '16 / 9',
   },
   {
