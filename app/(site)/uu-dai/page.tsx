@@ -9,7 +9,7 @@ export default async function OffersPage() {
   const [offers, s] = await Promise.all([getOffers(), getSettings()])
   const live = activeOffers(offers)
   return (
-    <section className="bg-ink pb-20 pt-14 text-veil sm:pb-28 sm:pt-20">
+    <section className="dark-surface bg-ink pb-20 pt-14 text-veil sm:pb-28 sm:pt-20">
       <div className="wrap">
         <div className="mb-14 grid gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-end">
           <h1 className="display-xl">Ưu đãi</h1>

@@ -29,7 +29,7 @@ export default function LoginPage() {
     <main className="grid min-h-[100svh] place-items-center bg-oyster px-5 py-10">
       <div className="w-full max-w-[400px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-black.png" alt="Darla Dear Darling" className="mx-auto h-12 w-auto" />
+        <img src="/logo-latte.png" alt="Darla Dear Darling" className="mx-auto h-12 w-auto" />
         <form onSubmit={submit} className="mt-10 space-y-4 rounded-2xl bg-veil p-6 sm:p-8">
           <h1 className="font-display text-[1.75rem]">Đăng nhập quản trị</h1>
           {!hasSupabase && (

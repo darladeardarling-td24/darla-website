@@ -43,7 +43,7 @@ export default function ProductList({ products, categories, collections = [], vi
                   <span className="font-display text-[1.75rem] leading-none tracking-[-0.02em] transition-transform duration-300 group-hover:translate-x-2 sm:text-[2.5rem] lg:text-[3.25rem]">
                     {p.name}
                   </span>
-                  {p.is_new && <span className="rounded-full border border-ink/40 px-2 py-0.5 text-[0.6875rem]">Mới</span>}
+                  {p.is_new && <span className="rounded-full border border-latte/50 px-2 py-0.5 text-[0.6875rem] text-mocha">Mới</span>}
                 </span>
                 <span className="meta col-start-2 lg:col-start-auto">
                   <span className="mr-2 text-ink/70 lg:hidden">{p.code}</span>

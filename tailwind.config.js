@@ -7,11 +7,12 @@ module.exports = {
         oyster: '#EAE3D6',   // nền be chủ đạo
         stone: '#D9CEBD',    // be đậm cho khối phụ
         veil: '#F7F3EC',     // trắng ngà cho bề mặt sáng
-        taupe: '#766B5F',    // chữ phụ
+        taupe: '#857565',    // chữ phụ (nâu xám ấm)
         mink: '#A89A88',     // đường kẻ, viền
-        ink: '#000000',      // đen logo
+        ink: '#2B231E',      // nâu espresso: chữ đọc & nền tối (thay đen thuần)
         latte: '#8C7558',    // be latte: logo & tiêu đề trên ảnh sáng
-        mocha: '#7D6650',    // be đậm: chữ nhỏ & nút trên ảnh sáng
+        mocha: '#7D6650',    // nâu mocha: nút chính, lựa chọn đang chọn
+        champagne: '#D2C1A6', // tiêu đề trên nền tối
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],

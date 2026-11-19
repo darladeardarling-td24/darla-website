@@ -14,7 +14,7 @@ import { SERVICE_KINDS } from '@/lib/types'
 // Màu chữ phần mở đầu (chọn trong admin → Ảnh trang chủ): be latte hoặc đen
 const TONES = {
   sand: { title: 'text-latte', sub: 'text-mocha', btn: 'bg-mocha text-veil hover:bg-latte', rule: 'border-latte/25' },
-  ink: { title: 'text-ink', sub: 'text-ink/70', btn: 'bg-ink text-veil hover:bg-ink/80', rule: 'border-ink/15' },
+  ink: { title: 'text-ink', sub: 'text-ink/70', btn: 'bg-mocha text-veil hover:bg-latte', rule: 'border-ink/15' },
 }
 
 export default async function HomePage() {
@@ -116,7 +116,7 @@ export default async function HomePage() {
       <section className="wrap pb-16 sm:pb-24">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)]">
           <p className="meta lg:pt-3">Về chúng tôi</p>
-          <p className="max-w-[30ch] font-display leading-[1.28] tracking-[-0.015em] text-ink" style={{ fontSize: 'clamp(1.6rem, 2.9vw, 2.9rem)' }}>
+          <p className="max-w-[30ch] font-display leading-[1.28] tracking-[-0.015em] text-mocha" style={{ fontSize: 'clamp(1.6rem, 2.9vw, 2.9rem)' }}>
             {s.about}
           </p>
         </div>
@@ -141,7 +141,7 @@ export default async function HomePage() {
                 <span className="text-right text-[0.875rem] leading-6 text-taupe">
                   <span className="block text-ink">{c.count} mẫu</span>
                   {c.from !== null && <span className="block">thuê từ {shortPrice(c.from)}</span>}
-                  {c.cols.length > 0 && <span className="hidden font-display text-[1rem] italic text-ink/80 sm:block">{c.cols.map((x) => x.name).join(', ')}</span>}
+                  {c.cols.length > 0 && <span className="hidden font-display text-[1rem] italic sm:block">{c.cols.map((x) => x.name).join(', ')}</span>}
                 </span>
               </Link>
             </li>
@@ -197,7 +197,7 @@ export default async function HomePage() {
 
       {/* ---------- Ưu đãi ---------- */}
       {live.length > 0 && (
-        <section className="bg-ink py-20 text-veil sm:py-28" aria-labelledby="offers">
+        <section className="dark-surface bg-ink py-20 text-veil sm:py-28" aria-labelledby="offers">
           <div className="wrap">
             <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
               <h2 id="offers" className="display-xl">Ưu đãi đang có</h2>

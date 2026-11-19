@@ -25,7 +25,7 @@ export default function NameIndex({ products }: { products: Product[] }) {
               onFocus={() => setHover(p)}
               onBlur={() => setHover(null)}
               className={`whitespace-nowrap decoration-1 underline-offset-[0.14em] transition-colors hover:italic hover:underline focus-visible:italic ${
-                hover && hover.id !== p.id ? 'text-ink/30' : 'text-ink'
+                hover && hover.id !== p.id ? 'text-latte/30' : 'text-latte'
               }`}
             >
               {p.name}

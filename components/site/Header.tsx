@@ -8,7 +8,7 @@ import { NAV } from './nav'
 type Tone = 'sand' | 'ink' | 'veil'
 type Props = { season: string | null; instagram: string | null; heroTone: { desktop: Tone; mobile: Tone } }
 
-const logo = (t: Tone) => (t === 'sand' ? '/logo-latte.png' : t === 'ink' ? '/logo-black.png' : '/logo-white.png')
+const logo = (t: Tone) => (t === 'veil' ? '/logo-white.png' : '/logo-latte.png')
 
 // Kiểu chữ & kính mờ khi nằm trên ảnh bìa, theo màu chọn trong admin (điện thoại / từ sm trở lên)
 const ON_IMG = {
@@ -27,8 +27,8 @@ export default function Header({ instagram, heroTone }: Props) {
   const [floating, setFloating] = useState(false)
   const path = usePathname()
   const onHome = path === '/'
-  const m = onHome ? heroTone.mobile : 'ink'
-  const d = onHome ? heroTone.desktop : 'ink'
+  const m = onHome ? heroTone.mobile : 'sand'
+  const d = onHome ? heroTone.desktop : 'sand'
   const im = ON_IMG[m]
   const id = ON_IMG_SM[d]
 
@@ -95,14 +95,16 @@ export default function Header({ instagram, heroTone }: Props) {
           )}
 
           <div className="flex items-center gap-2">
-            {onHome && (
-              <InstaButton
-                handle={instagram}
-                label="Tư vấn"
-                className={`hidden items-center gap-2 rounded-full border px-4 py-2.5 text-[0.875rem] backdrop-blur-md transition-colors hover:bg-white/50 lg:inline-flex ${im.glass} ${id.glass} ${im.text} ${id.text}`}
-              />
-            )}
-            <MenuButton onClick={() => setOpen(true)} glass={onHome} lineClass={onHome ? `${im.line} ${id.line}` : 'bg-ink'} glassClass={onHome ? `${im.glass} ${id.glass}` : ''} />
+            <InstaButton
+              handle={instagram}
+              label="Tư vấn"
+              className={
+                onHome
+                  ? `hidden items-center gap-2 rounded-full border px-4 py-2.5 text-[0.875rem] backdrop-blur-md transition-colors hover:bg-white/50 lg:inline-flex ${im.glass} ${id.glass} ${im.text} ${id.text}`
+                  : 'hidden items-center gap-2 rounded-full border border-mocha/40 px-4 py-2.5 text-[0.875rem] text-mocha transition-colors hover:bg-mocha hover:text-veil lg:inline-flex'
+              }
+            />
+            <MenuButton onClick={() => setOpen(true)} glass={onHome} lineClass={onHome ? `${im.line} ${id.line}` : 'bg-mocha'} glassClass={onHome ? `${im.glass} ${id.glass}` : ''} />
           </div>
         </div>
       </header>
@@ -117,7 +119,7 @@ export default function Header({ instagram, heroTone }: Props) {
         <div className="mx-auto flex max-w-page items-center justify-between gap-4 rounded-full border border-white/60 bg-oyster/75 py-2 pl-5 pr-2 shadow-[0_10px_40px_-12px_rgba(60,45,30,0.25)] backdrop-blur-xl sm:pl-6">
           <Link href="/" aria-label="Darla — trang chủ" tabIndex={floating ? 0 : -1} className="shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-black.png" alt="Darla" className="h-7 w-auto sm:h-8" />
+            <img src="/logo-latte.png" alt="Darla" className="h-7 w-auto sm:h-8" />
           </Link>
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Điều hướng nhanh">
             {NAV.map((n) => (
@@ -135,14 +137,14 @@ export default function Header({ instagram, heroTone }: Props) {
             <Link href="/bo-suu-tap" tabIndex={floating ? 0 : -1} className="hidden rounded-full bg-mocha px-5 py-2.5 text-[0.875rem] font-medium text-veil transition-colors hover:bg-latte sm:inline-flex">
               Xem bộ sưu tập
             </Link>
-            <MenuButton onClick={() => setOpen(true)} glass lineClass="bg-ink" glassClass="border-ink/10 bg-veil/70" />
+            <MenuButton onClick={() => setOpen(true)} glass lineClass="bg-mocha" glassClass="border-mocha/15 bg-veil/70" />
           </div>
         </div>
       </div>
 
       {/* Menu toàn màn hình */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-ink text-veil" role="dialog" aria-modal="true" aria-label="Menu">
+        <div className="dark-surface fixed inset-0 z-50 flex flex-col bg-ink text-veil" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="wrap flex items-center justify-between py-5 sm:py-7">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-white.png" alt="Darla Dear Darling" className="h-9 w-auto sm:h-11" />
@@ -152,9 +154,9 @@ export default function Header({ instagram, heroTone }: Props) {
             </button>
           </div>
           <nav className="wrap flex flex-1 flex-col justify-center gap-2" aria-label="Menu">
-            <Link href="/" className="display-md py-1 hover:text-mink">Trang chủ</Link>
+            <Link href="/" className="display-md py-1 transition-opacity hover:opacity-60">Trang chủ</Link>
             {NAV.map((n) => (
-              <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="display-md py-1 hover:text-mink">
+              <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="display-md py-1 transition-opacity hover:opacity-60">
                 {n.label}
               </Link>
             ))}

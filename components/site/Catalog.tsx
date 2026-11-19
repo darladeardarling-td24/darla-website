@@ -143,7 +143,7 @@ export default function Catalog({ products, categories, collections, attributes 
   }
 
   const chip = (on: boolean) =>
-    `rounded-full border px-3.5 py-1.5 text-[0.8125rem] transition-colors ${on ? 'border-ink bg-ink text-veil' : 'border-ink/20 hover:border-ink'}`
+    `rounded-full border px-3.5 py-1.5 text-[0.8125rem] transition-colors ${on ? 'border-mocha bg-mocha text-veil' : 'border-ink/20 hover:border-mocha'}`
 
   return (
     <div>
@@ -158,7 +158,7 @@ export default function Catalog({ products, categories, collections, attributes 
                 role="tab"
                 aria-selected={cat === c.slug}
                 onClick={() => pickCat(c.slug)}
-                className={`-mb-px whitespace-nowrap border-b pb-3 text-[0.9375rem] transition-colors ${cat === c.slug ? 'border-ink text-ink' : 'border-transparent text-taupe hover:text-ink'}`}
+                className={`-mb-px whitespace-nowrap border-b pb-3 text-[0.9375rem] transition-colors ${cat === c.slug ? 'border-mocha text-mocha' : 'border-transparent text-taupe hover:text-mocha'}`}
               >
                 {c.name} <sup className="text-[0.6875rem]">{c.n}</sup>
               </button>
@@ -182,7 +182,7 @@ export default function Catalog({ products, categories, collections, attributes 
                       clearFilters()
                     }}
                     aria-pressed={on}
-                    className={`flex w-[240px] flex-col items-start rounded-2xl p-5 text-left transition-colors sm:w-auto ${on ? 'bg-ink text-veil' : 'bg-veil hover:bg-stone'}`}
+                    className={`flex w-[240px] flex-col items-start rounded-2xl p-5 text-left transition-colors sm:w-auto ${on ? 'accent-surface bg-mocha text-veil' : 'bg-veil hover:bg-stone'}`}
                   >
                     <span className="flex w-full items-start justify-between gap-3">
                       <span className="font-display text-[1.875rem] leading-none tracking-[-0.02em]">{c.name}</span>

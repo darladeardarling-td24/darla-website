@@ -3,7 +3,7 @@ export default function Marquee({ text }: { text: string | null }) {
   const items = (text || 'Váy cưới may đo,Makeup cô dâu,Rạp cưới,Thử váy tại showroom').split(',').map((s) => s.trim()).filter(Boolean)
   const row = [...items, ...items, ...items]
   return (
-    <div className="overflow-hidden bg-ink py-3.5 text-veil sm:py-4" aria-hidden>
+    <div className="dark-surface overflow-hidden bg-ink py-3.5 text-veil sm:py-4" aria-hidden>
       <div className="marquee-track flex w-max">
         {[0, 1].map((k) => (
           <div key={k} className="flex shrink-0 items-center">
