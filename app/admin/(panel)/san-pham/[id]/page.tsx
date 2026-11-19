@@ -8,14 +8,15 @@ import { BackLink, Card, Field, Input, PageHead, PriceInput, Select, Textarea, T
 import { slugify } from '@/lib/format'
 import { removeImage } from '@/lib/image'
 import { supabaseBrowser } from '@/lib/supabase/client'
-import type { Category, Product } from '@/lib/types'
+import { ATTR_KINDS } from '@/lib/attributes'
+import type { Attribute, Category, Collection, Product } from '@/lib/types'
 
 type Draft = Omit<Product, 'id' | 'created_at' | 'updated_at'>
 
 const EMPTY: Draft = {
   code: '', name: '', slug: '', category_id: null, silhouette: '', material: '', sizes: '',
   price_rent: null, price_sale: null, price_note: 'Giá thuê trọn gói 3 ngày', short_desc: '', description: '',
-  images: [], is_featured: false, is_new: true, status: 'published', sort_order: 0,
+  images: [], collection_id: null, attrs: [], is_featured: false, is_new: true, status: 'published', sort_order: 0,
 }
 
 export default function ProductEdit() {
@@ -26,12 +27,16 @@ export default function ProductEdit() {
   const { isAdmin } = useStaff()
   const [d, setD] = useState<Draft>(EMPTY)
   const [cats, setCats] = useState<Category[]>([])
+  const [cols, setCols] = useState<Collection[]>([])
+  const [attrs, setAttrs] = useState<Attribute[]>([])
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [slugTouched, setSlugTouched] = useState(!isNew)
 
   useEffect(() => {
     const sb = supabaseBrowser()
+    sb.from('collections').select('*').order('sort_order').then(({ data }: { data: Collection[] | null }) => setCols(data ?? []))
+    sb.from('attributes').select('*').order('sort_order').then(({ data }: { data: Attribute[] | null }) => setAttrs(data ?? []))
     sb.from('categories').select('*').order('sort_order').then(({ data }: { data: Category[] | null }) => {
       setCats(data ?? [])
       if (isNew && data?.[0]) setD((x) => ({ ...x, category_id: x.category_id ?? data[0].id }))
@@ -126,15 +131,46 @@ export default function ProductEdit() {
             <ImageField value={d.images} onChange={(v) => set('images', v)} folder="products" />
           </Card>
 
-          <Card className="grid gap-4 sm:grid-cols-3">
-            <Field label="Dáng váy">
-              <Input value={d.silhouette ?? ''} onChange={(e) => set('silhouette', e.target.value)} placeholder="Chữ A, đuôi cá…" />
-            </Field>
-            <Field label="Chất liệu">
-              <Input value={d.material ?? ''} onChange={(e) => set('material', e.target.value)} />
-            </Field>
+          <Card className="space-y-5">
+            <div>
+              <h2 className="font-display text-[1.375rem]">Thông số & bộ lọc</h2>
+              <p className="meta mt-1">
+                Bấm để chọn (chọn được nhiều). Khách dùng các lựa chọn này để lọc váy. Thiếu lựa chọn nào thì thêm ở{' '}
+                <a href="/admin/bo-loc" target="_blank" className="text-ink underline underline-offset-4">Bộ lọc</a>.
+              </p>
+            </div>
+            {ATTR_KINDS.map((k) => {
+              const opts = attrs.filter((a) => a.kind === k.kind)
+              if (!opts.length) return null
+              return (
+                <div key={k.kind}>
+                  <p className="mb-2 text-[0.8125rem] font-medium">{k.label}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {opts.map((a) => {
+                      const on = (d.attrs ?? []).includes(a.id)
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => set('attrs', on ? (d.attrs ?? []).filter((x) => x !== a.id) : [...(d.attrs ?? []), a.id])}
+                          className={`rounded-full border px-3 py-1.5 text-[0.8125rem] transition-colors ${on ? 'border-ink bg-ink text-veil' : 'border-ink/20 hover:border-ink'}`}
+                        >
+                          {a.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+            {(d.silhouette || d.material) && !(d.attrs ?? []).length && (
+              <p className="meta rounded-xl bg-oyster px-3 py-2">
+                Thông tin cũ: {[d.silhouette, d.material].filter(Boolean).join(', ')}. Hãy chọn lại ở trên để váy xuất hiện khi khách lọc.
+              </p>
+            )}
             <Field label="Size">
-              <Input value={d.sizes ?? ''} onChange={(e) => set('sizes', e.target.value)} placeholder="XS – L" />
+              <Input value={d.sizes ?? ''} onChange={(e) => set('sizes', e.target.value)} placeholder="XS – L (may đo theo số đo)" />
             </Field>
           </Card>
         </div>
@@ -154,11 +190,29 @@ export default function ProductEdit() {
 
           <Card className="space-y-4">
             <Field label="Danh mục">
-              <Select value={d.category_id ?? ''} onChange={(e) => set('category_id', e.target.value || null)}>
+              <Select
+                value={d.category_id ?? ''}
+                onChange={(e) => {
+                  const v = e.target.value || null
+                  set('category_id', v)
+                  const cur = cols.find((c) => c.id === d.collection_id)
+                  if (cur && cur.category_id && cur.category_id !== v) set('collection_id', null)
+                }}
+              >
                 <option value="">Chưa phân loại</option>
                 {cats.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
+              </Select>
+            </Field>
+            <Field label="Bộ sưu tập" hint="Quản lý tên bộ sưu tập ở mục Bộ sưu tập.">
+              <Select value={d.collection_id ?? ''} onChange={(e) => set('collection_id', e.target.value || null)}>
+                <option value="">Không thuộc bộ sưu tập nào</option>
+                {cols
+                  .filter((c) => !d.category_id || !c.category_id || c.category_id === d.category_id)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}{c.status === 'draft' ? ' (nháp)' : ''}</option>
+                  ))}
               </Select>
             </Field>
             <Toggle checked={d.status === 'published'} onChange={(v) => set('status', v ? 'published' : 'draft')} label="Hiện trên website" />

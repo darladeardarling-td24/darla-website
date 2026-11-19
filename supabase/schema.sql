@@ -204,6 +204,83 @@ grant select on public.home_media to anon, authenticated;
 grant insert, update on public.home_media to authenticated;
 
 -- ---------------------------------------------------------------------
+-- 3c. Bộ sưu tập trong danh mục + Bộ lọc váy
+-- ---------------------------------------------------------------------
+
+-- 1. Bộ sưu tập: nhóm nhiều váy cùng phân khúc, tên tự đặt
+create table if not exists public.collections (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null unique,
+  category_id uuid references public.categories(id) on delete set null,
+  tagline text,                     -- một câu ngắn hiện dưới tên
+  description text,
+  cover jsonb,                      -- ảnh bìa (không bắt buộc)
+  launched_on date,                 -- ngày ra mắt
+  is_new boolean not null default false,
+  status text not null default 'published' check (status in ('published', 'draft')),
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- 2. Lựa chọn cho bộ lọc (dáng váy, chất liệu, kiểu cổ…)
+create table if not exists public.attributes (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null check (kind in ('silhouette', 'material', 'neckline', 'sleeve', 'train', 'color', 'style', 'occasion')),
+  name text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now(),
+  unique (kind, name)
+);
+
+-- 3. Gắn váy vào bộ sưu tập và các lựa chọn lọc
+alter table public.products add column if not exists collection_id uuid references public.collections(id) on delete set null;
+alter table public.products add column if not exists attrs uuid[] not null default '{}';
+
+-- 4. Phân quyền: khách xem, nhân sự thêm/sửa, quản trị viên xoá
+alter table public.collections enable row level security;
+alter table public.attributes enable row level security;
+
+drop policy if exists "collections read" on public.collections;
+create policy "collections read" on public.collections for select using (status = 'published' or public.is_staff());
+drop policy if exists "collections staff insert" on public.collections;
+create policy "collections staff insert" on public.collections for insert with check (public.is_staff());
+drop policy if exists "collections staff update" on public.collections;
+create policy "collections staff update" on public.collections for update using (public.is_staff()) with check (public.is_staff());
+drop policy if exists "collections admin delete" on public.collections;
+create policy "collections admin delete" on public.collections for delete using (public.is_admin());
+
+drop policy if exists "attributes read" on public.attributes;
+create policy "attributes read" on public.attributes for select using (true);
+drop policy if exists "attributes staff insert" on public.attributes;
+create policy "attributes staff insert" on public.attributes for insert with check (public.is_staff());
+drop policy if exists "attributes staff update" on public.attributes;
+create policy "attributes staff update" on public.attributes for update using (public.is_staff()) with check (public.is_staff());
+drop policy if exists "attributes admin delete" on public.attributes;
+create policy "attributes admin delete" on public.attributes for delete using (public.is_admin());
+
+grant select on public.collections, public.attributes to anon, authenticated;
+grant insert, update, delete on public.collections, public.attributes to authenticated;
+
+-- 5. Lựa chọn lọc gợi ý (sửa, thêm, xoá trong admin → Bộ lọc)
+insert into public.attributes (kind, name, sort_order)
+select v.kind, v.name, v.ord from (values
+  ('silhouette', 'Chữ A', 1), ('silhouette', 'Đuôi cá', 2), ('silhouette', 'Xòe công chúa', 3),
+  ('silhouette', 'Suông', 4), ('silhouette', 'Ôm body', 5), ('silhouette', 'Ngắn & midi', 6),
+  ('material', 'Satin', 1), ('material', 'Lụa', 2), ('material', 'Mikado', 3), ('material', 'Ren', 4),
+  ('material', 'Tulle', 5), ('material', 'Organza', 6), ('material', 'Crepe', 7), ('material', 'Tweed', 8),
+  ('neckline', 'Cúp ngực', 1), ('neckline', 'Trễ vai', 2), ('neckline', 'Cổ vuông', 3), ('neckline', 'Cổ tim', 4),
+  ('neckline', 'Cổ yếm', 5), ('neckline', 'Cổ thuyền', 6), ('neckline', 'Cổ cao', 7),
+  ('sleeve', 'Không tay', 1), ('sleeve', 'Hai dây', 2), ('sleeve', 'Tay ngắn', 3), ('sleeve', 'Tay dài', 4), ('sleeve', 'Tay phồng', 5),
+  ('train', 'Không đuôi', 1), ('train', 'Đuôi ngắn', 2), ('train', 'Đuôi dài', 3), ('train', 'Đuôi hoàng gia', 4),
+  ('color', 'Trắng tinh', 1), ('color', 'Trắng ngà', 2), ('color', 'Champagne', 3), ('color', 'Hồng phấn', 4),
+  ('style', 'Tối giản', 1), ('style', 'Cổ điển', 2), ('style', 'Quyến rũ', 3), ('style', 'Công chúa', 4), ('style', 'Phóng khoáng', 5),
+  ('occasion', 'Lễ nhà thờ', 1), ('occasion', 'Tiệc trong nhà', 2), ('occasion', 'Tiệc ngoài trời', 3),
+  ('occasion', 'Chụp ngoại cảnh', 4), ('occasion', 'Lễ gia tiên', 5)
+) as v(kind, name, ord)
+on conflict (kind, name) do nothing;
+
+-- ---------------------------------------------------------------------
 -- 4. Kho ảnh (Storage) — bucket công khai "media"
 -- ---------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

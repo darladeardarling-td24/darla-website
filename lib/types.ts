@@ -23,6 +23,24 @@ export type Settings = {
 
 export type Category = { id: string; name: string; slug: string; sort_order: number }
 
+/** Bộ sưu tập: nhóm váy cùng phân khúc trong một danh mục, tên do admin đặt */
+export type Collection = {
+  id: string
+  name: string
+  slug: string
+  category_id: string | null
+  tagline: string | null
+  description: string | null
+  cover: Img | null
+  launched_on: string | null
+  is_new: boolean
+  status: Status
+  sort_order: number
+}
+
+export type AttrKind = 'silhouette' | 'material' | 'neckline' | 'sleeve' | 'train' | 'color' | 'style' | 'occasion'
+export type Attribute = { id: string; kind: AttrKind; name: string; sort_order: number }
+
 export type Product = {
   id: string
   code: string | null
@@ -38,6 +56,8 @@ export type Product = {
   short_desc: string | null
   description: string | null
   images: Img[]
+  collection_id?: string | null
+  attrs?: string[]
   is_featured: boolean
   is_new: boolean
   status: Status

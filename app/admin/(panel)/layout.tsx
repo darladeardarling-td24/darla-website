@@ -10,6 +10,8 @@ const NAV = [
   { href: '/admin', label: 'Tổng quan' },
   { href: '/admin/trang-chu', label: 'Ảnh trang chủ' },
   { href: '/admin/san-pham', label: 'Sản phẩm' },
+  { href: '/admin/bo-suu-tap', label: 'Bộ sưu tập' },
+  { href: '/admin/bo-loc', label: 'Bộ lọc' },
   { href: '/admin/danh-muc', label: 'Danh mục' },
   { href: '/admin/uu-dai', label: 'Ưu đãi' },
   { href: '/admin/dich-vu', label: 'Makeup & rạp cưới' },

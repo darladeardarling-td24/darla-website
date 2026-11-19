@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import demo from './demo-data.json'
 import { SUPABASE_ANON_KEY, SUPABASE_URL, hasSupabase } from './supabase/env'
 import type { HomeMedia, HomeSlot } from './home-slots'
-import type { Category, Offer, Product, Service, Settings, TextTone } from './types'
+import type { Attribute, AttrKind, Category, Collection, Offer, Product, Service, Settings, TextTone } from './types'
 
 /**
  * Dữ liệu cho trang khách. Kết quả được lưu đệm 60 giây; khi nhân sự lưu nội dung
@@ -20,9 +20,22 @@ const db = hasSupabase
   : null
 
 const demoCategories: Category[] = demo.categories.map((c) => ({ ...c, id: 'cat-' + c.slug }))
+const demoAttributes: Attribute[] = demo.attributes.map((a) => ({ ...a, kind: a.kind as AttrKind, id: `a-${a.kind}-${a.name}` }))
+const demoCollections: Collection[] = demo.collections.map((c) => {
+  const { category, ...rest } = c
+  return { ...rest, id: 'col-' + c.slug, category_id: 'cat-' + category, cover: null, status: 'published' }
+})
 const demoProducts: Product[] = demo.products.map((p) => {
-  const { category, ...rest } = p
-  return { ...rest, id: 'p-' + p.slug, category_id: 'cat-' + category, images: [], status: 'published' }
+  const { category, collection, attr_names, ...rest } = p as typeof p & { collection?: string | null; attr_names?: string[] }
+  return {
+    ...rest,
+    id: 'p-' + p.slug,
+    category_id: 'cat-' + category,
+    collection_id: collection ? 'col-' + collection : null,
+    attrs: (attr_names ?? []).map((n) => 'a-' + n.replace(':', '-')),
+    images: [],
+    status: 'published',
+  }
 })
 const demoServices: Service[] = demo.services.map((s, i) => ({
   ...s, id: 's-' + i, kind: s.kind as Service['kind'], image: null, status: 'published',
@@ -30,18 +43,20 @@ const demoServices: Service[] = demo.services.map((s, i) => ({
 const demoOffers: Offer[] = demo.offers.map((o, i) => ({ ...o, id: 'o-' + i, start_date: null, image: null, status: 'published' }))
 const demoSettings: Settings = { ...demo.settings, hero_image: null }
 
+/** Gọi Supabase; chưa cấu hình thì dùng dữ liệu mẫu, gặp lỗi thì trả rỗng (không bao giờ hiện dữ liệu mẫu trên web thật) */
 async function safe<T>(fn: () => PromiseLike<{ data: T | null; error: unknown }>, fallback: T): Promise<T> {
   if (!db) return fallback
+  const empty = (Array.isArray(fallback) ? [] : fallback) as T
   try {
     const { data, error } = await fn()
     if (error) {
       console.error('[supabase]', error)
-      return fallback
+      return empty
     }
-    return data ?? fallback
+    return data ?? empty
   } catch (e) {
     console.error('[supabase]', e)
-    return fallback
+    return empty
   }
 }
 
@@ -52,6 +67,17 @@ export async function getSettings(): Promise<Settings> {
 
 export function getCategories() {
   return safe<Category[]>(() => db!.from('categories').select('*').order('sort_order'), demoCategories)
+}
+
+export function getCollections() {
+  return safe<Collection[]>(
+    () => db!.from('collections').select('*').eq('status', 'published').order('sort_order').order('launched_on', { ascending: false }),
+    demoCollections,
+  )
+}
+
+export function getAttributes() {
+  return safe<Attribute[]>(() => db!.from('attributes').select('id,kind,name,sort_order').order('sort_order'), demoAttributes)
 }
 
 export function getProducts() {

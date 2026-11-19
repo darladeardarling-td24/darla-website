@@ -1,7 +1,7 @@
 import type { Img } from './types'
 
 export type Focus = 'top' | 'center' | 'bottom'
-export type HomeSlot = 'hero' | 'hero_mobile' | 'hero_detail' | 'look_1' | 'look_2' | 'look_3'
+export type HomeSlot = 'hero' | 'hero_mobile' | 'hero_detail'
 export type HomeMedia = { slot: HomeSlot; image: Img | null; focus: Focus; caption: string | null }
 
 /** Các vị trí ảnh trên trang chủ — dùng chung cho trang khách và trang admin */
@@ -26,9 +26,6 @@ export const HOME_SLOTS: { slot: HomeSlot; label: string; hint: string; ratio: s
     ratio: '3 / 4',
     optional: true,
   },
-  { slot: 'look_1', label: 'Lookbook · ảnh dọc bên trái', hint: 'Ảnh dọc toàn thân.', ratio: '3 / 4' },
-  { slot: 'look_2', label: 'Lookbook · ảnh ngang ở giữa', hint: 'Ảnh ngang: không gian, nhóm phù dâu, hậu trường…', ratio: '4 / 3' },
-  { slot: 'look_3', label: 'Lookbook · ảnh dọc bên phải', hint: 'Ảnh dọc, nên khác góc máy với ảnh bên trái.', ratio: '3 / 4' },
 ]
 
 export const FOCUS_LABEL: Record<Focus, string> = { top: 'Giữ phần trên', center: 'Giữ phần giữa', bottom: 'Giữ phần dưới' }

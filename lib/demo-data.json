@@ -50,7 +50,19 @@
       "description": "Amélie là tinh thần Paris tối giản: phom chữ A mềm, cổ vuông thanh mảnh và chiếc nơ lụa buông dài phía sau. Phù hợp cô dâu yêu sự nhẹ nhàng, tổ chức tiệc trong nhà hoặc lễ nhà thờ.",
       "is_featured": true,
       "is_new": true,
-      "sort_order": 1
+      "sort_order": 1,
+      "collection": "lumiere",
+      "attr_names": [
+        "color:Trắng ngà",
+        "material:Satin",
+        "material:Lụa",
+        "neckline:Cổ vuông",
+        "occasion:Lễ nhà thờ",
+        "silhouette:Chữ A",
+        "sleeve:Không tay",
+        "style:Tối giản",
+        "train:Đuôi ngắn"
+      ]
     },
     {
       "code": "DL-002",
@@ -67,7 +79,19 @@
       "description": "Céline tôn đường cong với phom đuôi cá ôm vừa vặn, cổ yếm cao và lưng trần sâu. Chất crepe dày rủ đẹp, gần như không nhăn khi di chuyển.",
       "is_featured": true,
       "is_new": false,
-      "sort_order": 2
+      "sort_order": 2,
+      "collection": "heritage",
+      "attr_names": [
+        "color:Trắng tinh",
+        "material:Lụa",
+        "material:Crepe",
+        "neckline:Cổ yếm",
+        "occasion:Tiệc trong nhà",
+        "silhouette:Đuôi cá",
+        "sleeve:Không tay",
+        "style:Quyến rũ",
+        "train:Đuôi ngắn"
+      ]
     },
     {
       "code": "DL-003",
@@ -84,7 +108,18 @@
       "description": "Margaux dành cho lễ cưới lớn: chân váy mikado đứng phom, lớp tulle mỏng bên trong và tà dài 2m. Thân áo corset cài khuy bọc vải.",
       "is_featured": true,
       "is_new": true,
-      "sort_order": 3
+      "sort_order": 3,
+      "collection": "heritage",
+      "attr_names": [
+        "color:Trắng ngà",
+        "material:Mikado",
+        "material:Tulle",
+        "neckline:Trễ vai",
+        "occasion:Lễ nhà thờ",
+        "silhouette:Xòe công chúa",
+        "style:Công chúa",
+        "train:Đuôi hoàng gia"
+      ]
     },
     {
       "code": "DL-004",
@@ -101,7 +136,20 @@
       "description": "Odette nhẹ như gió với phom suông, tay phồng organza trong và chân váy hai lớp. Lựa chọn lý tưởng cho chụp ảnh ngoại cảnh và tiệc cưới ngoài trời.",
       "is_featured": true,
       "is_new": false,
-      "sort_order": 4
+      "sort_order": 4,
+      "collection": "lumiere",
+      "attr_names": [
+        "color:Trắng tinh",
+        "material:Lụa",
+        "material:Organza",
+        "neckline:Cổ thuyền",
+        "occasion:Tiệc ngoài trời",
+        "occasion:Chụp ngoại cảnh",
+        "silhouette:Suông",
+        "sleeve:Tay phồng",
+        "style:Phóng khoáng",
+        "train:Không đuôi"
+      ]
     },
     {
       "code": "DL-011",
@@ -118,7 +166,15 @@
       "description": "Colette là chiếc váy đi bàn gọn gàng, cổ đổ mềm, dài qua gối để cô dâu dễ di chuyển chào khách.",
       "is_featured": false,
       "is_new": true,
-      "sort_order": 5
+      "sort_order": 5,
+      "collection": "soiree",
+      "attr_names": [
+        "color:Champagne",
+        "material:Satin",
+        "neckline:Cổ tim",
+        "sleeve:Hai dây",
+        "style:Tối giản"
+      ]
     },
     {
       "code": "DL-012",
@@ -135,7 +191,16 @@
       "description": "Noémie mang hơi thở cổ điển Pháp với chất tweed trắng ngà, khuy ngọc trai và phom chữ A ngắn trẻ trung.",
       "is_featured": false,
       "is_new": false,
-      "sort_order": 6
+      "sort_order": 6,
+      "collection": "soiree",
+      "attr_names": [
+        "color:Trắng ngà",
+        "material:Tweed",
+        "neckline:Cổ thuyền",
+        "silhouette:Chữ A",
+        "sleeve:Tay ngắn",
+        "style:Cổ điển"
+      ]
     },
     {
       "code": "DL-021",
@@ -152,7 +217,9 @@
       "description": "Áo dài Ngọc Lan may từ gấm trắng ngà, thêu tay hoa ngọc lan dọc thân, kèm khăn đóng cùng tông — dành cho lễ gia tiên.",
       "is_featured": false,
       "is_new": false,
-      "sort_order": 7
+      "sort_order": 7,
+      "collection": null,
+      "attr_names": []
     },
     {
       "code": "DL-031",
@@ -169,7 +236,9 @@
       "description": "Laurent là bộ vest đen kinh điển, ve áo sa-tanh bóng nhẹ, may slim fit. Kèm sơ mi trắng và nơ cổ.",
       "is_featured": false,
       "is_new": false,
-      "sort_order": 8
+      "sort_order": 8,
+      "collection": null,
+      "attr_names": []
     }
   ],
   "services": [
@@ -249,6 +318,260 @@
       "description": "Đặt lịch thử váy và cọc trước ngày cưới từ 3 tháng.",
       "terms": "Áp dụng cho tất cả váy cưới.",
       "end_date": null,
+      "sort_order": 3
+    }
+  ],
+  "attributes": [
+    {
+      "kind": "color",
+      "name": "Trắng tinh",
+      "sort_order": 1
+    },
+    {
+      "kind": "color",
+      "name": "Trắng ngà",
+      "sort_order": 2
+    },
+    {
+      "kind": "color",
+      "name": "Champagne",
+      "sort_order": 3
+    },
+    {
+      "kind": "color",
+      "name": "Hồng phấn",
+      "sort_order": 4
+    },
+    {
+      "kind": "material",
+      "name": "Satin",
+      "sort_order": 1
+    },
+    {
+      "kind": "material",
+      "name": "Lụa",
+      "sort_order": 2
+    },
+    {
+      "kind": "material",
+      "name": "Mikado",
+      "sort_order": 3
+    },
+    {
+      "kind": "material",
+      "name": "Ren",
+      "sort_order": 4
+    },
+    {
+      "kind": "material",
+      "name": "Tulle",
+      "sort_order": 5
+    },
+    {
+      "kind": "material",
+      "name": "Organza",
+      "sort_order": 6
+    },
+    {
+      "kind": "material",
+      "name": "Crepe",
+      "sort_order": 7
+    },
+    {
+      "kind": "material",
+      "name": "Tweed",
+      "sort_order": 8
+    },
+    {
+      "kind": "neckline",
+      "name": "Cúp ngực",
+      "sort_order": 1
+    },
+    {
+      "kind": "neckline",
+      "name": "Trễ vai",
+      "sort_order": 2
+    },
+    {
+      "kind": "neckline",
+      "name": "Cổ vuông",
+      "sort_order": 3
+    },
+    {
+      "kind": "neckline",
+      "name": "Cổ tim",
+      "sort_order": 4
+    },
+    {
+      "kind": "neckline",
+      "name": "Cổ yếm",
+      "sort_order": 5
+    },
+    {
+      "kind": "neckline",
+      "name": "Cổ thuyền",
+      "sort_order": 6
+    },
+    {
+      "kind": "neckline",
+      "name": "Cổ cao",
+      "sort_order": 7
+    },
+    {
+      "kind": "occasion",
+      "name": "Lễ nhà thờ",
+      "sort_order": 1
+    },
+    {
+      "kind": "occasion",
+      "name": "Tiệc trong nhà",
+      "sort_order": 2
+    },
+    {
+      "kind": "occasion",
+      "name": "Tiệc ngoài trời",
+      "sort_order": 3
+    },
+    {
+      "kind": "occasion",
+      "name": "Chụp ngoại cảnh",
+      "sort_order": 4
+    },
+    {
+      "kind": "occasion",
+      "name": "Lễ gia tiên",
+      "sort_order": 5
+    },
+    {
+      "kind": "silhouette",
+      "name": "Chữ A",
+      "sort_order": 1
+    },
+    {
+      "kind": "silhouette",
+      "name": "Đuôi cá",
+      "sort_order": 2
+    },
+    {
+      "kind": "silhouette",
+      "name": "Xòe công chúa",
+      "sort_order": 3
+    },
+    {
+      "kind": "silhouette",
+      "name": "Suông",
+      "sort_order": 4
+    },
+    {
+      "kind": "silhouette",
+      "name": "Ôm body",
+      "sort_order": 5
+    },
+    {
+      "kind": "silhouette",
+      "name": "Ngắn & midi",
+      "sort_order": 6
+    },
+    {
+      "kind": "sleeve",
+      "name": "Không tay",
+      "sort_order": 1
+    },
+    {
+      "kind": "sleeve",
+      "name": "Hai dây",
+      "sort_order": 2
+    },
+    {
+      "kind": "sleeve",
+      "name": "Tay ngắn",
+      "sort_order": 3
+    },
+    {
+      "kind": "sleeve",
+      "name": "Tay dài",
+      "sort_order": 4
+    },
+    {
+      "kind": "sleeve",
+      "name": "Tay phồng",
+      "sort_order": 5
+    },
+    {
+      "kind": "style",
+      "name": "Tối giản",
+      "sort_order": 1
+    },
+    {
+      "kind": "style",
+      "name": "Cổ điển",
+      "sort_order": 2
+    },
+    {
+      "kind": "style",
+      "name": "Quyến rũ",
+      "sort_order": 3
+    },
+    {
+      "kind": "style",
+      "name": "Công chúa",
+      "sort_order": 4
+    },
+    {
+      "kind": "style",
+      "name": "Phóng khoáng",
+      "sort_order": 5
+    },
+    {
+      "kind": "train",
+      "name": "Không đuôi",
+      "sort_order": 1
+    },
+    {
+      "kind": "train",
+      "name": "Đuôi ngắn",
+      "sort_order": 2
+    },
+    {
+      "kind": "train",
+      "name": "Đuôi dài",
+      "sort_order": 3
+    },
+    {
+      "kind": "train",
+      "name": "Đuôi hoàng gia",
+      "sort_order": 4
+    }
+  ],
+  "collections": [
+    {
+      "name": "Lumière",
+      "slug": "lumiere",
+      "category": "vay-cuoi",
+      "tagline": "Lụa trơn, phom sạch, ánh sáng tự nhiên",
+      "description": "Những chiếc váy tối giản bằng lụa và satin, dành cho cô dâu yêu sự nhẹ nhàng.",
+      "launched_on": "2026-10-01",
+      "is_new": true,
+      "sort_order": 1
+    },
+    {
+      "name": "Héritage",
+      "slug": "heritage",
+      "category": "vay-cuoi",
+      "tagline": "Cổ điển, đứng phom, dành cho lễ cưới lớn",
+      "description": "Mikado, tà dài và đường cắt kinh điển châu Âu.",
+      "launched_on": "2026-04-01",
+      "is_new": false,
+      "sort_order": 2
+    },
+    {
+      "name": "Soirée",
+      "slug": "soiree",
+      "category": "vay-di-ban",
+      "tagline": "Gọn nhẹ để đi chào khách",
+      "description": "Váy midi và set tweed cho phần tiệc tối.",
+      "launched_on": "2026-10-01",
+      "is_new": true,
       "sort_order": 3
     }
   ]

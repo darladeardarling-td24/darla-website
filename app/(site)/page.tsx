@@ -3,11 +3,11 @@ import InstaButton from '@/components/site/InstaButton'
 import Marquee from '@/components/site/Marquee'
 import Media from '@/components/site/Media'
 import OfferCards from '@/components/site/OfferCards'
-import ProductList from '@/components/site/ProductList'
-import ServiceGroups from '@/components/site/ServiceGroups'
-import { activeOffers, getCategories, getHero, getHomeMedia, getOffers, getProducts, getServices, getSettings } from '@/lib/data'
-import type { HomeMedia, HomeSlot } from '@/lib/home-slots'
-import type { Img } from '@/lib/types'
+import NameIndex from '@/components/site/NameIndex'
+import StickyCta from '@/components/site/StickyCta'
+import { activeOffers, getCategories, getCollections, getHero, getOffers, getProducts, getServices, getSettings } from '@/lib/data'
+import { shortPrice } from '@/lib/format'
+import { SERVICE_KINDS } from '@/lib/types'
 
 // Màu chữ & lớp phủ theo độ sáng ảnh: 'ink' = ảnh sáng → chữ đen, 'veil' = ảnh tối → chữ trắng
 // 'sand' = chữ be latte (ảnh sáng), 'ink' = chữ đen (ảnh sáng), 'veil' = chữ trắng (ảnh tối)
@@ -33,29 +33,40 @@ const SHADE_D = {
 }
 
 export default async function HomePage() {
-  const [s, products, categories, offers, services, media, hero] = await Promise.all([
+  const [s, products, categories, offers, services, hero, collections] = await Promise.all([
     getSettings(),
     getProducts(),
     getCategories(),
     getOffers(),
     getServices(),
-    getHomeMedia(),
     getHero(),
+    getCollections(),
   ])
   const t = hero.tone
-  const featured = products.filter((p) => p.is_featured).slice(0, 6)
-  const list = featured.length ? featured : products.slice(0, 6)
   const live = activeOffers(offers).slice(0, 3)
-  const year = new Date().getFullYear()
-
-  // Ảnh trang chủ: ưu tiên ảnh chọn trong admin → Ảnh trang chủ, nếu trống thì lấy ảnh sản phẩm
-  const productImgs: Img[] = list.flatMap((p) => p.images).concat(products.flatMap((p) => p.images))
-  const pick = (slot: HomeSlot, fallbackIndex: number): HomeMedia => {
-    const m = media[slot]
-    return m ?? { slot, image: productImgs[fallbackIndex] ?? null, focus: 'center', caption: null }
+  const minOf = (xs: (number | null)[]) => {
+    const v = xs.filter((x): x is number => x !== null)
+    return v.length ? Math.min(...v) : null
   }
-  const looks = [pick('look_1', 1), pick('look_2', 2), pick('look_3', 3)]
-  const newest = products.filter((p) => p.images[0]).slice(0, 3)
+  // Mục lục: mỗi danh mục kèm số mẫu và giá thuê thấp nhất
+  const cats = categories
+    .map((c) => {
+      const items = products.filter((p) => p.category_id === c.id)
+      const cols = collections.filter((x) => x.category_id === c.id && items.some((p) => p.collection_id === x.id))
+      return { ...c, count: items.length, from: minOf(items.map((p) => p.price_rent)), cols }
+    })
+    .filter((c) => c.count > 0)
+  // Bộ sưu tập mới ra (có ít nhất một mẫu)
+  const fresh = collections
+    .filter((c) => c.is_new)
+    .map((c) => ({ ...c, count: products.filter((p) => p.collection_id === c.id).length, cat: categories.find((k) => k.id === c.category_id) }))
+    .filter((c) => c.count > 0)
+  const serviceLines = (['makeup', 'venue', 'photo', 'other'] as const)
+    .map((k) => {
+      const items = services.filter((x) => x.kind === k)
+      return { kind: k, label: SERVICE_KINDS[k], count: items.length, from: minOf(items.map((x) => x.price_from)) }
+    })
+    .filter((l) => l.count > 0)
 
   return (
     <>
@@ -111,81 +122,87 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Mẫu mới về ---------- */}
-      {newest.length > 0 && (
-        <section className="wrap">
-          <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 py-7 sm:py-9">
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-3">
-                {newest.map((p) => (
-                  <Link key={p.id} href={`/bo-suu-tap/${p.slug}`} className="h-12 w-12 overflow-hidden rounded-full ring-2 ring-oyster sm:h-14 sm:w-14" aria-label={p.name}>
-                    <Media img={p.images[0]} alt={p.name} />
-                  </Link>
+      {/* ---------- Lời mở: chữ thay cho ảnh ---------- */}
+      <section className="wrap pb-16 pt-10 sm:pb-24 sm:pt-16">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)]">
+          <p className="meta lg:pt-3">Về chúng tôi</p>
+          <p className="max-w-[30ch] font-display leading-[1.28] tracking-[-0.015em] text-ink" style={{ fontSize: 'clamp(1.6rem, 2.9vw, 2.9rem)' }}>
+            {s.about}
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- Mục lục bộ sưu tập: lối vào chính ---------- */}
+      <section className="wrap pb-20 sm:pb-28" aria-labelledby="index">
+        <div className="mb-6 flex items-end justify-between gap-6 sm:mb-8">
+          <h2 id="index" className="meta">Bộ sưu tập</h2>
+          <Link href="/bo-suu-tap" className="meta underline underline-offset-4 hover:text-ink">Xem tất cả {products.length} mẫu</Link>
+        </div>
+        <ul className="border-b border-ink/15">
+          {cats.map((c) => (
+            <li key={c.id} className="border-t border-ink/15">
+              <Link href={`/bo-suu-tap?danh-muc=${c.slug}`} className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 py-5 sm:py-7">
+                <span
+                  className="font-display font-normal leading-[0.98] tracking-[-0.035em] transition-[letter-spacing] duration-500 group-hover:italic group-hover:tracking-[-0.02em]"
+                  style={{ fontSize: 'clamp(2.75rem, 8.2vw, 8rem)' }}
+                >
+                  {c.name}
+                </span>
+                <span className="text-right text-[0.875rem] leading-6 text-taupe">
+                  <span className="block text-ink">{c.count} mẫu</span>
+                  {c.from !== null && <span className="block">thuê từ {shortPrice(c.from)}</span>}
+                  {c.cols.length > 0 && <span className="hidden font-display text-[1rem] italic text-ink/80 sm:block">{c.cols.map((x) => x.name).join(', ')}</span>}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-10 sm:mt-12">
+          <Link href="/bo-suu-tap" className="btn bg-mocha text-veil hover:bg-latte">Xem tất cả {products.length} mẫu váy</Link>
+        </div>
+      </section>
+
+      {/* ---------- Bộ sưu tập mới ra ---------- */}
+      {fresh.length > 0 && (
+        <section className="bg-veil py-20 sm:py-28" aria-labelledby="fresh">
+          <div className="wrap">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)]">
+              <h2 id="fresh" className="meta">Mới ra</h2>
+              <ul className="space-y-10 sm:space-y-12">
+                {fresh.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/bo-suu-tap?bst=${c.slug}`} className="group block">
+                      <span className="meta block">
+                        {c.cat?.name}, {c.count} mẫu
+                      </span>
+                      <span
+                        className="mt-1 block font-display italic leading-[0.95] tracking-[-0.035em] transition-opacity group-hover:opacity-60"
+                        style={{ fontSize: 'clamp(3.25rem, 9vw, 9rem)' }}
+                      >
+                        {c.name}
+                      </span>
+                      {c.tagline && <span className="mt-3 block max-w-[40ch] text-[1rem] leading-7 text-ink/75">{c.tagline}</span>}
+                      <span className="mt-4 inline-block text-[0.875rem] font-medium underline underline-offset-[6px]">Xem bộ sưu tập {c.name}</span>
+                    </Link>
+                  </li>
                 ))}
-              </div>
-              <p className="text-[0.9375rem] leading-6">
-                Mới về:{' '}
-                {newest.map((p, i) => (
-                  <span key={p.id}>
-                    <Link href={`/bo-suu-tap/${p.slug}`} className="font-display text-[1.125rem] italic hover:underline">{p.name}</Link>
-                    {i < newest.length - 1 ? ', ' : ''}
-                  </span>
-                ))}
-              </p>
+              </ul>
             </div>
-            <p className="meta">{s.hours}</p>
           </div>
         </section>
       )}
 
       <Marquee text={s.marquee} />
 
-      {/* ---------- Lookbook ---------- */}
-      <section className="wrap py-20 sm:py-28" aria-labelledby="lookbook">
-        <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 lg:grid-cols-12 lg:gap-y-10">
-          <figure className="order-2 col-span-2 lg:order-none lg:col-span-4 lg:row-span-2">
-            <div className="aspect-[3/4] overflow-hidden rounded-[22px]">
-              <Media img={looks[0].image} focus={looks[0].focus} alt={looks[0].caption || 'Lookbook'} variant="full" />
-            </div>
-            {looks[0].caption && <figcaption className="meta mt-3">{looks[0].caption}</figcaption>}
-          </figure>
-
-          <div className="order-1 col-span-2 lg:order-none lg:col-span-8 lg:pl-6">
-            <h2 id="lookbook" className="display-lg">{s.season_label}</h2>
-            <p className="mt-6 max-w-[52ch] font-display text-[1.25rem] leading-[1.6] text-ink/85 sm:text-[1.4375rem]">{s.about}</p>
-            <Link href="/bo-suu-tap" className="btn-line mt-8">Xem bộ sưu tập</Link>
+      {/* ---------- Tên các mẫu váy ---------- */}
+      <section className="wrap py-20 sm:py-28" aria-labelledby="names">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)]">
+          <div>
+            <h2 id="names" className="meta">Những cái tên của mùa này</h2>
+            <p className="meta mt-2 hidden max-w-[22ch] lg:block">Rê chuột vào tên để xem váy, bấm để xem giá và chất liệu.</p>
           </div>
-
-          <figure className="relative order-3 lg:order-none lg:col-span-5 lg:col-start-5 lg:pl-6 lg:pt-6">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-[22px] lg:aspect-[4/3]">
-              <Media img={looks[1].image} focus={looks[1].focus} alt={looks[1].caption || 'Lookbook'} variant="full" />
-              <span
-                className="text-outline-veil pointer-events-none absolute -bottom-[0.18em] right-[0.06em] font-display italic leading-none tracking-tightest"
-                style={{ fontSize: 'clamp(3.5rem, 11vw, 10rem)' }}
-                aria-hidden
-              >
-                ©{String(year).slice(2)}
-              </span>
-            </div>
-            {looks[1].caption && <figcaption className="meta mt-3">{looks[1].caption}</figcaption>}
-          </figure>
-
-          <figure className="order-4 mt-10 lg:order-none lg:col-span-3 lg:mt-24">
-            <div className="aspect-[3/4] overflow-hidden rounded-[22px]">
-              <Media img={looks[2].image} focus={looks[2].focus} alt={looks[2].caption || 'Lookbook'} variant="full" />
-            </div>
-            {looks[2].caption && <figcaption className="meta mt-3">{looks[2].caption}</figcaption>}
-          </figure>
+          <NameIndex products={products} />
         </div>
-      </section>
-
-      {/* ---------- Váy nổi bật ---------- */}
-      <section className="wrap pb-20 sm:pb-28" aria-labelledby="featured">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-6 border-t border-ink/15 pt-14 sm:mb-14 sm:pt-20">
-          <h2 id="featured" className="display-lg max-w-[14ch]">Những mẫu được hỏi nhiều nhất</h2>
-          <Link href="/bo-suu-tap" className="btn-line">Toàn bộ {products.length} mẫu</Link>
-        </div>
-        <ProductList products={list.slice(0, 4)} categories={categories} filters={false} initialView="grid" />
       </section>
 
       {/* ---------- Ưu đãi ---------- */}
@@ -201,16 +218,24 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ---------- Makeup & rạp cưới ---------- */}
+      {/* ---------- Makeup & rạp cưới: gọn trong hai dòng ---------- */}
       <section className="wrap py-20 sm:py-28" aria-labelledby="services">
-        <div className="mb-12 grid gap-6 md:grid-cols-2 md:items-end">
-          <h2 id="services" className="display-lg max-w-[12ch]">Trọn một ngày cưới</h2>
-          <p className="max-w-[44ch] text-[1.0625rem] leading-7 text-ink/80 md:justify-self-end">
-            Ngoài váy, chúng tôi nhận trang điểm cô dâu và dựng rạp cưới, để cả ngày của bạn chung một tinh thần.
-          </p>
-        </div>
-        <ServiceGroups services={services} />
+        <h2 id="services" className="meta mb-6 sm:mb-8">Trọn một ngày cưới</h2>
+        <ul className="border-b border-ink/15">
+          {serviceLines.map((l) => (
+            <li key={l.kind} className="border-t border-ink/15">
+              <Link href="/dich-vu" className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 py-5 sm:py-6">
+                <span className="font-display leading-none tracking-[-0.025em] group-hover:italic" style={{ fontSize: 'clamp(1.9rem, 4.4vw, 4rem)' }}>
+                  {l.label}
+                </span>
+                <span className="text-right text-[0.875rem] text-taupe">{l.from !== null ? `từ ${shortPrice(l.from)}` : 'Báo giá riêng'}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
+
+      <StickyCta count={products.length} />
     </>
   )
 }

@@ -71,6 +71,7 @@ Khi có bản cập nhật kèm file `supabase/update-…sql`, chạy file đó 
 | File | Nội dung |
 | --- | --- |
 | `update-01-anh-trang-chu.sql` | Thêm mục **Ảnh trang chủ** trong admin. Nếu nội dung mẫu còn nguyên thì bỏ bớt chữ "Darla Dear Darling" lặp lại. |
+| `update-02-bo-suu-tap-bo-loc.sql` | Thêm **Bộ sưu tập** (nhóm váy trong từng danh mục) và **Bộ lọc** (dáng váy, chất liệu, kiểu cổ, tay áo, đuôi váy, màu sắc, phong cách, dịp cưới). Tự chuyển dáng váy/chất liệu đã nhập sang bộ lọc. |
 
 ## 4. Chạy thử trên máy tính (không bắt buộc)
 
@@ -86,13 +87,19 @@ Khi chưa điền Supabase, web vẫn chạy và hiển thị nội dung mẫu �
 
 ---
 
+## Bộ sưu tập & bộ lọc
+
+- **Bộ sưu tập** (admin → Bộ sưu tập): nhóm nhiều váy cùng phân khúc trong một danh mục, tên tự đặt (ví dụ Lumière, Héritage, Soirée). Bật **Mới ra** để bộ sưu tập hiện ở trang chủ. Gắn váy vào bộ sưu tập trong trang sửa sản phẩm.
+- **Bộ lọc** (admin → Bộ lọc): sửa, thêm, xoá lựa chọn trong 8 nhóm. Trong trang sửa sản phẩm, bấm chọn các lựa chọn phù hợp cho từng váy. Nhóm nào chưa có váy nào được gắn thì tự ẩn trên web.
+- Khách lọc theo danh mục, bộ sưu tập, giá thuê, mẫu mới và các nhóm trên; sắp xếp theo mới nhất hoặc giá. Bộ lọc nằm trên đường dẫn, ví dụ `…/bo-suu-tap?bst=lumiere` hay `…/bo-suu-tap?danh-muc=vay-cuoi&dang=duoi-ca`, nên có thể gửi thẳng cho khách qua Instagram.
+
 ## Phân quyền
 
 | Việc | Quản trị viên | Nhân sự nội dung |
 | --- | :---: | :---: |
-| Thêm, sửa sản phẩm, ưu đãi, dịch vụ, danh mục | ✓ | ✓ |
+| Thêm, sửa sản phẩm, bộ sưu tập, bộ lọc, ưu đãi, dịch vụ, danh mục | ✓ | ✓ |
 | Tải ảnh lên | ✓ | ✓ |
-| Xoá sản phẩm, ưu đãi, dịch vụ, danh mục | ✓ | |
+| Xoá sản phẩm, bộ sưu tập, lựa chọn lọc, ưu đãi, dịch vụ, danh mục | ✓ | |
 | Sửa thông tin website (Instagram, địa chỉ, chữ trang chủ) | ✓ | |
 | Tạo, xoá tài khoản, đặt lại mật khẩu nhân sự | ✓ | |
 
@@ -100,7 +107,7 @@ Quyền được kiểm tra ngay trong cơ sở dữ liệu (Row Level Security)
 
 ## Ảnh
 
-- **Ảnh trang chủ**: vào admin → **Ảnh trang chủ**. Mỗi vị trí (ảnh lớn đầu trang, ảnh riêng cho điện thoại, ảnh chi tiết nhỏ, 3 ảnh lookbook) có sơ đồ chỉ chỗ ảnh nằm, nút đổi hoặc gỡ ảnh, và lựa chọn giữ phần trên, giữa hoặc dưới khi ảnh bị cắt. Nhân sự nội dung cũng đổi được mục này.
+- **Ảnh trang chủ**: trang chủ chỉ dùng một ảnh lớn ở đầu trang; phần còn lại là chữ (mục lục danh mục, tên các mẫu váy) dẫn khách vào bộ sưu tập. Vào admin → **Ảnh trang chủ** để đổi ảnh, bấm vào gương mặt cô dâu để chọn điểm giữ lại khi cắt, và chọn màu chữ trên ảnh (be, đen hoặc trắng). Nhân sự nội dung cũng đổi được mục này.
 - Ảnh được **nén ngay trên trình duyệt** trước khi tải lên: bản lớn có cạnh dài 2000px, bản nhỏ 900px cho danh sách, định dạng WebP. Ảnh 8–15MB từ máy ảnh thường còn khoảng 300–600KB và vẫn giữ nét ren, voan.
 - Nên dùng ảnh dọc tỉ lệ 3:4. Ảnh đầu tiên của mỗi sản phẩm là ảnh bìa.
 - Gói miễn phí của Supabase có 1GB lưu ảnh, đủ cho khoảng 1.000–1.500 mẫu váy (mỗi mẫu 3–4 ảnh).

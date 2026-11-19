@@ -20,3 +20,53 @@ insert into public.services (kind,name,price_from,price_note,description,feature
 insert into public.offers (title,highlight,description,terms,end_date,sort_order) values ('Combo trọn gói','-20%','Thuê váy cưới + makeup ngày cưới + rạp tối giản trong cùng một gói.','Áp dụng cho lịch cưới đến hết 06/2027.','2027-06-30',1);
 insert into public.offers (title,highlight,description,terms,end_date,sort_order) values ('Tặng váy đi bàn','Miễn phí','Thuê váy cưới từ 9.500.000đ được tặng 1 váy đi bàn bất kỳ.','Không cộng dồn với ưu đãi khác.',null,2);
 insert into public.offers (title,highlight,description,terms,end_date,sort_order) values ('Đặt sớm 3 tháng','-10%','Đặt lịch thử váy và cọc trước ngày cưới từ 3 tháng.','Áp dụng cho tất cả váy cưới.',null,3);
+
+-- Bộ sưu tập mẫu & lựa chọn lọc cho váy mẫu
+-- 6. Chuyển dáng váy / chất liệu đã nhập dạng chữ sang lựa chọn lọc (nếu khớp tên)
+update public.products p
+set attrs = (
+  select coalesce(array_agg(distinct a.id), '{}')
+  from public.attributes a
+  where (a.kind = 'silhouette' and lower(coalesce(p.silhouette, '')) like '%' || lower(a.name) || '%')
+     or (a.kind = 'material'   and lower(coalesce(p.material, ''))   like '%' || lower(a.name) || '%')
+)
+where p.attrs = '{}';
+
+-- 7. Bộ sưu tập mẫu cho các váy mẫu (chỉ tạo khi chưa có bộ sưu tập nào)
+do $$
+begin
+  if not exists (select 1 from public.collections) then
+    insert into public.collections (name, slug, category_id, tagline, description, launched_on, is_new, sort_order) values
+      ('Lumière', 'lumiere', (select id from public.categories where slug = 'vay-cuoi'),
+       'Lụa trơn, phom sạch, ánh sáng tự nhiên',
+       'Những chiếc váy tối giản bằng lụa và satin, dành cho cô dâu yêu sự nhẹ nhàng.', current_date, true, 1),
+      ('Héritage', 'heritage', (select id from public.categories where slug = 'vay-cuoi'),
+       'Cổ điển, đứng phom, dành cho lễ cưới lớn',
+       'Mikado, tà dài và đường cắt kinh điển châu Âu.', current_date - 180, false, 2),
+      ('Soirée', 'soiree', (select id from public.categories where slug = 'vay-di-ban'),
+       'Gọn nhẹ để đi chào khách',
+       'Váy midi và set tweed cho phần tiệc tối.', current_date, true, 3);
+    update public.products set collection_id = (select id from public.collections where slug = 'lumiere') where slug in ('amelie', 'odette');
+    update public.products set collection_id = (select id from public.collections where slug = 'heritage') where slug in ('celine', 'margaux');
+    update public.products set collection_id = (select id from public.collections where slug = 'soiree') where slug in ('colette', 'noemie');
+    -- Gắn thêm vài lựa chọn lọc cho váy mẫu để bộ lọc có dữ liệu ngay
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('neckline','Cổ vuông'),('style','Tối giản'),('occasion','Lễ nhà thờ'),('color','Trắng ngà'),('train','Đuôi ngắn'),('sleeve','Không tay'))))) where slug = 'amelie';
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('neckline','Cổ yếm'),('style','Quyến rũ'),('occasion','Tiệc trong nhà'),('color','Trắng tinh'),('train','Đuôi ngắn'),('sleeve','Không tay'))))) where slug = 'celine';
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('neckline','Trễ vai'),('style','Công chúa'),('occasion','Lễ nhà thờ'),('color','Trắng ngà'),('train','Đuôi hoàng gia'),('material','Tulle'))))) where slug = 'margaux';
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('neckline','Cổ thuyền'),('style','Phóng khoáng'),('occasion','Chụp ngoại cảnh'),('occasion','Tiệc ngoài trời'),('color','Trắng tinh'),('sleeve','Tay phồng'),('train','Không đuôi'))))) where slug = 'odette';
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('color','Champagne'),('neckline','Cổ tim'),('sleeve','Hai dây'),('style','Tối giản'))))) where slug = 'colette';
+    update public.products set attrs = array(select distinct unnest(attrs || array(
+      select id from public.attributes where (kind, name) in
+      (('color','Trắng ngà'),('neckline','Cổ thuyền'),('sleeve','Tay ngắn'),('style','Cổ điển'))))) where slug = 'noemie';
+  end if;
+end $$;

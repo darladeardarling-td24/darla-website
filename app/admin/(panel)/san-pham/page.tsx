@@ -6,13 +6,15 @@ import { useStaff } from '@/components/admin/StaffContext'
 import { Input, PageHead, Select, StatusBadge, useToast } from '@/components/admin/ui'
 import { shortPrice } from '@/lib/format'
 import { supabaseBrowser } from '@/lib/supabase/client'
-import type { Category, Product } from '@/lib/types'
+import type { Category, Collection, Product } from '@/lib/types'
 
 export default function ProductsAdmin() {
   const [rows, setRows] = useState<Product[] | null>(null)
   const [cats, setCats] = useState<Category[]>([])
   const [q, setQ] = useState('')
   const [cat, setCat] = useState('')
+  const [cols, setCols] = useState<Collection[]>([])
+  const [col, setCol] = useState('')
   const toast = useToast()
   const { isAdmin } = useStaff()
 
@@ -20,11 +22,13 @@ export default function ProductsAdmin() {
     const sb = supabaseBrowser()
     sb.from('products').select('*').order('sort_order').order('created_at', { ascending: false }).then(({ data }: { data: Product[] | null }) => setRows(data ?? []))
     sb.from('categories').select('*').order('sort_order').then(({ data }: { data: Category[] | null }) => setCats(data ?? []))
+    sb.from('collections').select('*').order('sort_order').then(({ data }: { data: Collection[] | null }) => setCols(data ?? []))
   }, [])
 
   const catName = useMemo(() => Object.fromEntries(cats.map((c) => [c.id, c.name])), [cats])
+  const colName = useMemo(() => Object.fromEntries(cols.map((c) => [c.id, c.name])), [cols])
   const shown = (rows ?? []).filter(
-    (p) => (!cat || p.category_id === cat) && (!q || `${p.name} ${p.code}`.toLowerCase().includes(q.toLowerCase())),
+    (p) => (!cat || p.category_id === cat) && (!col || (col === 'none' ? !p.collection_id : p.collection_id === col)) && (!q || `${p.name} ${p.code}`.toLowerCase().includes(q.toLowerCase())),
   )
 
   async function patch(p: Product, change: Partial<Product>) {
@@ -41,11 +45,18 @@ export default function ProductsAdmin() {
         desc="Váy cưới, váy đi bàn, áo dài, vest. Bấm vào tên để sửa."
         action={<Link href="/admin/san-pham/moi" className="btn-ink">Thêm sản phẩm</Link>}
       />
-      <div className="mb-4 grid gap-2.5 sm:grid-cols-[1fr_220px]">
+      <div className="mb-4 grid gap-2.5 sm:grid-cols-[1fr_200px_200px]">
         <Input placeholder="Tìm theo tên hoặc mã váy" value={q} onChange={(e) => setQ(e.target.value)} />
         <Select value={cat} onChange={(e) => setCat(e.target.value)}>
           <option value="">Tất cả danh mục</option>
           {cats.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </Select>
+        <Select value={col} onChange={(e) => setCol(e.target.value)}>
+          <option value="">Tất cả bộ sưu tập</option>
+          <option value="none">Chưa thuộc bộ sưu tập</option>
+          {cols.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </Select>
@@ -71,7 +82,7 @@ export default function ProductsAdmin() {
               <div className="min-w-0 flex-1">
                 <Link href={`/admin/san-pham/${p.id}`} className="font-display text-[1.25rem] hover:underline">{p.name}</Link>
                 <p className="meta flex flex-wrap gap-x-3">
-                  {[p.code, catName[p.category_id ?? ''], `Thuê ${shortPrice(p.price_rent)}`, `${p.images.length} ảnh`].filter(Boolean).map((t) => (
+                  {[p.code, catName[p.category_id ?? ''], colName[p.collection_id ?? ''], `Thuê ${shortPrice(p.price_rent)}`, `${p.images.length} ảnh`].filter(Boolean).map((t) => (
                     <span key={t}>{t}</span>
                   ))}
                 </p>

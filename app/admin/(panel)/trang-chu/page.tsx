@@ -39,7 +39,7 @@ export default function HomeImagesAdmin() {
     <>
       <PageHead
         title="Ảnh trang chủ"
-        desc="Mỗi ô là một vị trí trên trang chủ (ô đen trong sơ đồ). Bấm vào ảnh để chọn điểm giữ lại khi ảnh bị cắt; khung xem trước bên cạnh cho thấy đúng như trên web."
+        desc="Trang chủ chỉ dùng một ảnh lớn ở đầu trang, phần còn lại là chữ dẫn vào bộ sưu tập. Bấm vào ảnh để chọn điểm giữ lại khi ảnh bị cắt; khung xem trước bên cạnh cho thấy đúng như trên web."
         action={<Link href="/" target="_blank" className="btn-line">Xem trang chủ</Link>}
       />
       {rows === null ? (
@@ -209,14 +209,11 @@ function Schematic({ slot }: { slot: HomeSlot }) {
       <div className={`relative h-[58px] rounded ${on('hero')}`}>
         <div className={`absolute bottom-1.5 right-1.5 h-[30px] w-[22px] rounded-sm ${slot === 'hero_detail' ? 'bg-veil ring-2 ring-ink' : 'bg-veil/40'}`} />
       </div>
-      <div className="my-1.5 h-1.5 rounded bg-ink/80" />
-      <div className="grid grid-cols-[1fr_1.3fr_0.8fr] gap-1">
-        <div className={`h-[52px] rounded-sm ${on('look_1')}`} />
-        <div className="space-y-1">
-          <div className="h-1.5 rounded bg-ink/10" />
-          <div className={`h-[28px] rounded-sm ${on('look_2')}`} />
-        </div>
-        <div className={`mt-3 h-[40px] rounded-sm ${on('look_3')}`} />
+      <div className="my-1.5 space-y-1">
+        <div className="h-1.5 w-4/5 rounded bg-ink/10" />
+        <div className="h-3 rounded bg-ink/10" />
+        <div className="h-3 rounded bg-ink/10" />
+        <div className="h-3 w-3/4 rounded bg-ink/10" />
       </div>
     </div>
   )
