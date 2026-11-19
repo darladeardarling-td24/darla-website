@@ -284,7 +284,7 @@ on conflict (kind, name) do nothing;
 -- 4. Kho ảnh (Storage) — bucket công khai "media"
 -- ---------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('media', 'media', true, 5242880, array['image/webp', 'image/jpeg', 'image/png'])
+values ('media', 'media', true, 5242880, array['image/webp', 'image/jpeg', 'image/png', 'video/mp4'])
 on conflict (id) do update set public = true;
 
 drop policy if exists "media public read" on storage.objects;

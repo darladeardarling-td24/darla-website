@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { refreshSite } from '@/app/admin/actions'
 import ImageField from '@/components/admin/ImageField'
+import LiveField from '@/components/admin/LiveField'
 import { useStaff } from '@/components/admin/StaffContext'
 import { BackLink, Card, Field, Input, PageHead, PriceInput, Select, Textarea, Toggle, useToast } from '@/components/admin/ui'
 import { slugify } from '@/lib/format'
@@ -129,6 +130,9 @@ export default function ProductEdit() {
           <Card>
             <p className="mb-3 text-[0.8125rem] font-medium">Ảnh sản phẩm</p>
             <ImageField value={d.images} onChange={(v) => set('images', v)} folder="products" />
+            <div className="mt-5 border-t border-ink/10 pt-5">
+              <LiveField images={d.images} onChange={(v) => set('images', v)} />
+            </div>
           </Card>
 
           <Card className="space-y-5">

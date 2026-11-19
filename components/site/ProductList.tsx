@@ -5,6 +5,19 @@ import { shortPrice } from '@/lib/format'
 import type { Category, Collection, Product } from '@/lib/types'
 import Media from './Media'
 
+/** Dấu hiệu ảnh sống, giống biểu tượng Live Photo */
+function LiveBadge() {
+  return (
+    <span className="absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full bg-veil/85 text-mocha" title="Ảnh sống" aria-label="Ảnh sống">
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+        <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="5.6" />
+        <circle cx="12" cy="12" r="9" strokeDasharray="1.4 2.2" />
+      </svg>
+    </span>
+  )
+}
+
 type Props = {
   products: Product[]
   categories: Category[]
@@ -66,6 +79,7 @@ export default function ProductList({ products, categories, collections = [], vi
                 <span className="relative block aspect-[3/4] overflow-hidden rounded-2xl">
                   <Media img={p.images[0]} alt={p.name} className="transition-transform duration-700 group-hover:scale-[1.03]" />
                   {p.is_new && <span className="absolute left-2.5 top-2.5 rounded-full bg-veil/90 px-2.5 py-0.5 text-[0.6875rem]">Mới</span>}
+                  {p.images[0]?.live && <LiveBadge />}
                 </span>
                 <span className="mt-3 flex items-baseline justify-between gap-2">
                   <span className="font-display text-xl sm:text-2xl">{p.name}</span>
@@ -90,7 +104,7 @@ export default function ProductList({ products, categories, collections = [], vi
         }`}
         aria-hidden
       >
-        {hover && <Media img={hover.images[0]} alt="" tone="veil" />}
+        {hover && <Media img={hover.images[0]} alt="" tone="veil" live="view" />}
       </div>
     </div>
   )

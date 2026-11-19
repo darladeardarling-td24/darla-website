@@ -39,7 +39,7 @@ export default function NameIndex({ products }: { products: Product[] }) {
         className={`pointer-events-none fixed left-0 top-0 z-30 hidden aspect-[3/4] w-[220px] overflow-hidden rounded-2xl shadow-[0_30px_60px_-20px_rgba(0,0,0,0.35)] transition-opacity duration-200 lg:block ${hover ? 'opacity-100' : 'opacity-0'}`}
         aria-hidden
       >
-        {hover && <Media img={hover.images[0]} alt="" tone="veil" />}
+        {hover && <Media img={hover.images[0]} alt="" tone="veil" live="view" />}
       </div>
     </div>
   )

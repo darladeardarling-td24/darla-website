@@ -61,6 +61,7 @@ export default function ImageField({ value, onChange, folder, max = 12 }: Props)
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={im.thumb || im.url} alt="" className="h-full w-full object-cover" />
               {i === 0 && <span className="absolute left-1.5 top-1.5 rounded-full bg-ink px-2 py-0.5 text-[0.6875rem] text-veil">Ảnh bìa</span>}
+              {im.live && <span className="absolute right-1.5 top-1.5 rounded-full bg-veil/90 px-2 py-0.5 text-[0.6875rem]">Ảnh sống</span>}
               <div className="absolute inset-x-0 bottom-0 flex justify-between gap-1 bg-gradient-to-t from-black/70 to-transparent p-1.5 pt-6">
                 <div className="flex gap-1">
                   <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="h-7 w-7 rounded-full bg-veil/90 text-[0.8rem] disabled:opacity-30" aria-label="Đưa lên trước">‹</button>

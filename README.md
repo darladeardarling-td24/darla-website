@@ -71,6 +71,7 @@ Khi có bản cập nhật kèm file `supabase/update-…sql`, chạy file đó 
 | File | Nội dung |
 | --- | --- |
 | `update-01-anh-trang-chu.sql` | Thêm mục **Ảnh trang chủ** trong admin. Nếu nội dung mẫu còn nguyên thì bỏ bớt chữ "Darla Dear Darling" lặp lại. |
+| `update-03-anh-song.sql` | Cho phép tải **ảnh sống** (video MP4 ngắn) vào kho ảnh. |
 | `update-02-bo-suu-tap-bo-loc.sql` | Thêm **Bộ sưu tập** (nhóm váy trong từng danh mục) và **Bộ lọc** (dáng váy, chất liệu, kiểu cổ, tay áo, đuôi váy, màu sắc, phong cách, dịp cưới). Tự chuyển dáng váy/chất liệu đã nhập sang bộ lọc. |
 
 ## 4. Chạy thử trên máy tính (không bắt buộc)
@@ -86,6 +87,13 @@ npm run dev                  # mở http://localhost:3000
 Khi chưa điền Supabase, web vẫn chạy và hiển thị nội dung mẫu để bạn xem giao diện.
 
 ---
+
+## Ảnh sống (video 2–3 giây)
+
+- Trong trang sửa sản phẩm, mục **Ảnh sống**: chọn video quay bằng điện thoại (video .MOV 4K của iPhone cũng được), chọn đoạn bắt đầu và độ dài 2 hoặc 3 giây, bấm **Tạo ảnh sống**, rồi bấm **Lưu**.
+- Video được xử lý ngay trên máy của nhân viên: cắt đoạn, bỏ tiếng, thu nhỏ còn cạnh ngắn 720px, nén MP4 khoảng 100–300KB. Lần đầu cần tải bộ xử lý khoảng 30MB (lưu lại cho lần sau). Video 4K dài khoảng 30–60 giây để xử lý.
+- Trên web: ảnh bìa của váy hiện ảnh tĩnh trước; máy tính chạy ảnh sống khi rê chuột, điện thoại chạy khi lướt tới; trang chi tiết tự chạy. Video chỉ tải khi cần, dừng khi ra khỏi màn hình, và không chạy khi khách bật Tiết kiệm dữ liệu hoặc Giảm chuyển động.
+- Gói miễn phí của Supabase có 1GB lưu trữ và khoảng 10GB truyền tải mỗi tháng; ảnh sống nhẹ nên dùng thoải mái cho giai đoạn đầu.
 
 ## Bộ sưu tập & bộ lọc
 

@@ -9,7 +9,7 @@ export default function Gallery({ images, name }: { images: Img[]; name: string 
   return (
     <div>
       <div className="aspect-[3/4] overflow-hidden rounded-[24px]">
-        <Media img={current} alt={`${name} — ảnh ${i + 1}`} variant="full" eager />
+        <Media img={current} alt={`${name} — ảnh ${i + 1}`} variant="full" eager live="view" />
       </div>
       {images.length > 1 && (
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
@@ -21,7 +21,7 @@ export default function Gallery({ images, name }: { images: Img[]; name: string 
               aria-current={k === i}
               className={`aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-lg transition-opacity sm:w-20 ${k === i ? 'ring-1 ring-ink ring-offset-2 ring-offset-oyster' : 'opacity-60 hover:opacity-100'}`}
             >
-              <Media img={im} alt="" />
+              <Media img={im} alt="" live="off" />
             </button>
           ))}
         </div>
