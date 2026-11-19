@@ -134,11 +134,6 @@ function SlotCard({ def, row, onSave }: { def: (typeof HOME_SLOTS)[number]; row:
                 <div className="relative h-[160px] overflow-hidden rounded-xl bg-stone sm:h-[180px]" style={{ aspectRatio: ratio }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img.thumb || img.url} alt="" className="h-full w-full object-cover" style={{ objectPosition: pos }} />
-                  {isHero && (
-                    <span className={`absolute bottom-3 left-3 font-display text-[1rem] leading-tight ${img.text === 'sand' ? 'text-latte' : img.text === 'ink' ? 'text-ink' : 'text-veil'}`}>
-                      Tiêu đề
-                    </span>
-                  )}
                 </div>
               </div>
             ))}
@@ -149,26 +144,25 @@ function SlotCard({ def, row, onSave }: { def: (typeof HOME_SLOTS)[number]; row:
           <div className="grid gap-4 md:grid-cols-2">
             {isHero && (
               <div>
-                <p className="mb-1.5 text-[0.8125rem] font-medium">Màu chữ trên ảnh</p>
-                <div className="inline-flex rounded-full bg-oyster p-1" role="radiogroup" aria-label="Màu chữ trên ảnh">
+                <p className="mb-1.5 text-[0.8125rem] font-medium">Màu chữ phần mở đầu</p>
+                <div className="inline-flex rounded-full bg-oyster p-1" role="radiogroup" aria-label="Màu chữ phần mở đầu">
                   {([
                     ['sand', 'Chữ be'],
                     ['ink', 'Chữ đen'],
-                    ['veil', 'Chữ trắng'],
                   ] as const).map(([v, l]) => (
                     <button
                       key={v}
                       type="button"
                       role="radio"
-                      aria-checked={(img.text ?? 'veil') === v}
+                      aria-checked={(img.text === 'ink' ? 'ink' : 'sand') === v}
                       onClick={() => onSave({ image: { ...img, text: v } })}
-                      className={`rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-colors ${(img.text ?? 'veil') === v ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
+                      className={`rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-colors ${(img.text === 'ink' ? 'ink' : 'sand') === v ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
                     >
                       {l}
                     </button>
                   ))}
                 </div>
-                <p className="meta mt-1.5">Áp dụng cho logo, menu, tiêu đề và nút trên ảnh. Chữ be và chữ đen hợp ảnh sáng; chữ trắng hợp ảnh tối.</p>
+                <p className="meta mt-1.5">Tiêu đề, đoạn giới thiệu và nút nằm ngay dưới ảnh bìa.</p>
               </div>
             )}
             <label className="block">
@@ -206,8 +200,13 @@ function Schematic({ slot }: { slot: HomeSlot }) {
   return (
     <div className="relative mx-auto h-[150px] w-[120px] rounded-lg border border-ink/20 bg-veil p-1.5" aria-hidden>
       <div className="mb-1 h-1.5 w-8 rounded bg-ink/15" />
-      <div className={`relative h-[58px] rounded ${on('hero')}`}>
-        <div className={`absolute bottom-1.5 right-1.5 h-[30px] w-[22px] rounded-sm ${slot === 'hero_detail' ? 'bg-veil ring-2 ring-ink' : 'bg-veil/40'}`} />
+      <div className={`h-[52px] rounded ${on('hero')}`} />
+      <div className="mt-1.5 flex items-end gap-1">
+        <div className="flex-1 space-y-1">
+          <div className="h-2.5 w-4/5 rounded bg-ink/25" />
+          <div className="h-1.5 w-3/5 rounded bg-ink/10" />
+        </div>
+        <div className={`h-[20px] w-[14px] rounded-sm ${slot === 'hero_detail' ? 'bg-ink' : 'bg-ink/10'}`} />
       </div>
       <div className="my-1.5 space-y-1">
         <div className="h-1.5 w-4/5 rounded bg-ink/10" />

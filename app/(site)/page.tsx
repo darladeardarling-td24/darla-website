@@ -10,26 +10,10 @@ import { shortPrice } from '@/lib/format'
 import { SERVICE_KINDS } from '@/lib/types'
 
 // Màu chữ & lớp phủ theo độ sáng ảnh: 'ink' = ảnh sáng → chữ đen, 'veil' = ảnh tối → chữ trắng
-// 'sand' = chữ be latte (ảnh sáng), 'ink' = chữ đen (ảnh sáng), 'veil' = chữ trắng (ảnh tối)
-const TXT = { sand: 'text-latte', ink: 'text-ink', veil: 'text-veil' }
-const TXT_SM = { sand: 'sm:text-latte', ink: 'sm:text-ink', veil: 'sm:text-veil' }
-const SUB = { sand: 'text-mocha', ink: 'text-ink/70', veil: 'text-veil/80' }
-const SUB_SM = { sand: 'sm:text-mocha', ink: 'sm:text-ink/70', veil: 'sm:text-veil/80' }
-const BTN = { sand: 'bg-mocha text-veil hover:bg-latte', ink: 'bg-ink text-veil hover:bg-ink/80', veil: 'bg-veil text-ink hover:bg-stone' }
-const BTN_SM = {
-  sand: 'sm:bg-mocha sm:text-veil sm:hover:bg-latte',
-  ink: 'sm:bg-ink sm:text-veil sm:hover:bg-ink/80',
-  veil: 'sm:bg-veil sm:text-ink sm:hover:bg-stone',
-}
-const SHADE_M = {
-  sand: 'bg-[linear-gradient(to_top,rgba(234,227,214,1)_0%,rgba(234,227,214,0.88)_24%,rgba(234,227,214,0.35)_44%,rgba(234,227,214,0)_58%),linear-gradient(to_bottom,rgba(234,227,214,0.5)_0%,rgba(234,227,214,0)_14%)]',
-  ink: 'bg-[linear-gradient(to_top,rgba(234,227,214,1)_0%,rgba(234,227,214,0.88)_24%,rgba(234,227,214,0.35)_44%,rgba(234,227,214,0)_58%),linear-gradient(to_bottom,rgba(234,227,214,0.5)_0%,rgba(234,227,214,0)_14%)]',
-  veil: 'bg-[linear-gradient(to_top,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.35)_35%,rgba(0,0,0,0)_65%),linear-gradient(to_bottom,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0)_20%)]',
-}
-const SHADE_D = {
-  sand: 'bg-[linear-gradient(to_right,rgba(234,227,214,0.88)_0%,rgba(234,227,214,0.55)_32%,rgba(234,227,214,0)_58%),linear-gradient(to_bottom,rgba(234,227,214,0.5)_0%,rgba(234,227,214,0)_16%)]',
-  ink: 'bg-[linear-gradient(to_right,rgba(234,227,214,0.88)_0%,rgba(234,227,214,0.55)_32%,rgba(234,227,214,0)_58%),linear-gradient(to_bottom,rgba(234,227,214,0.5)_0%,rgba(234,227,214,0)_16%)]',
-  veil: 'bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.25)_35%,rgba(0,0,0,0)_60%),linear-gradient(to_bottom,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0)_18%)]',
+// Màu chữ phần mở đầu (chọn trong admin → Ảnh trang chủ): be latte hoặc đen
+const TONES = {
+  sand: { title: 'text-latte', sub: 'text-mocha', btn: 'bg-mocha text-veil hover:bg-latte', rule: 'border-latte/25' },
+  ink: { title: 'text-ink', sub: 'text-ink/70', btn: 'bg-ink text-veil hover:bg-ink/80', rule: 'border-ink/15' },
 }
 
 export default async function HomePage() {
@@ -42,7 +26,7 @@ export default async function HomePage() {
     getHero(),
     getCollections(),
   ])
-  const t = hero.tone
+  const tone = TONES[hero.tone.desktop === 'ink' ? 'ink' : 'sand']
   const live = activeOffers(offers).slice(0, 3)
   const minOf = (xs: (number | null)[]) => {
     const v = xs.filter((x): x is number => x !== null)
@@ -70,52 +54,54 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ---------- Ảnh lớn đầu trang: tràn toàn màn hình, mép dưới tan vào nền be ---------- */}
-      <section className="relative isolate h-[100svh] min-h-[620px] overflow-hidden sm:max-h-[1080px] sm:min-h-[680px]">
-        <div className="absolute inset-0 -z-20 hidden sm:block">
-          <Media img={hero.hero.image} focus={hero.hero.focus} alt={hero.hero.caption || 'Cô dâu trong váy cưới'} variant="full" tone="veil" eager />
-        </div>
-        <div className="absolute inset-0 -z-20 sm:hidden">
-          <Media img={hero.mobile.image} focus={hero.mobile.focus} alt={hero.mobile.caption || 'Cô dâu trong váy cưới'} variant="full" tone="veil" eager />
+      {/* ---------- Ảnh bìa: để trơn, không chữ; mép dưới tan nhẹ vào nền be ---------- */}
+      <section aria-label="Ảnh bìa">
+        <div className="relative h-[64svh] min-h-[420px] overflow-hidden sm:h-[76svh] sm:max-h-[920px] sm:min-h-[560px]">
+          <div className="absolute inset-0 hidden sm:block">
+            <Media img={hero.hero.image} focus={hero.hero.focus} alt={hero.hero.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
+          </div>
+          <div className="absolute inset-0 sm:hidden">
+            <Media img={hero.mobile.image} focus={hero.mobile.focus} alt={hero.mobile.caption || 'Cô dâu trong váy cưới Darla'} variant="full" tone="stone" eager />
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-[16%] bg-gradient-to-t from-oyster via-oyster/50 to-transparent" />
         </div>
 
-        {/* Lớp phủ: nhẹ ở trên cho logo, đậm dần về phía chữ, cuối cùng hoà vào nền trang */}
-        <div className={`absolute inset-0 -z-10 sm:hidden ${SHADE_M[t.mobile]}`} />
-        <div className={`absolute inset-0 -z-10 hidden sm:block ${SHADE_D[t.desktop]}`} />
-        <div className={`absolute inset-x-0 bottom-0 -z-10 bg-gradient-to-t from-oyster via-oyster/60 to-transparent sm:h-[18%] ${t.mobile === 'veil' ? 'h-[6%]' : 'h-[22%]'}`} />
+        {/* Chữ đặt dưới ảnh, kiểu trang mở đầu tạp chí */}
+        <div className="wrap relative pb-16 pt-6 sm:pb-24 sm:pt-8">
+          <div className={`flex items-center justify-between gap-4 border-b pb-4 text-[0.8125rem] ${tone.rule} ${tone.sub}`}>
+            <span className="flex items-center gap-3">
+              <span className="h-px w-8 bg-current" />
+              {s.season_label}
+            </span>
+            <span className="hidden sm:inline">{products.length} mẫu đang có tại showroom</span>
+          </div>
 
-        <div className="wrap flex h-full flex-col justify-end pb-[5svh] sm:pb-[14svh]">
-          <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_auto]">
-            <div className={`${TXT[t.mobile]} ${TXT_SM[t.desktop]}`}>
-              <p className={`flex items-center gap-3 text-[0.8125rem] tracking-[0.02em] ${SUB[t.mobile]} ${SUB_SM[t.desktop]}`}>
-                <span className="h-px w-8 bg-current" />
-                {s.season_label}
-              </p>
-              <h1
-                className="mt-5 max-w-[13ch] font-display font-normal leading-[1.02] tracking-[-0.03em]"
-                style={{ fontSize: 'clamp(2.5rem, 4.4vw + 0.9rem, 6.25rem)' }}
-              >
-                {s.hero_title}
-              </h1>
-              <p className={`mt-4 max-w-[36ch] text-[0.9375rem] leading-[1.7] sm:mt-5 sm:text-[1rem] ${SUB[t.mobile]} ${SUB_SM[t.desktop]}`}>{s.hero_subtitle}</p>
-              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-8">
-                <Link href="/bo-suu-tap" className={`rounded-full px-6 py-3 text-[0.875rem] font-medium transition-colors ${BTN[t.mobile]} ${BTN_SM[t.desktop]}`}>
+          <div className="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] lg:items-end lg:gap-12">
+            <h1
+              className={`max-w-[14ch] font-display font-normal leading-[1] tracking-[-0.035em] ${tone.title}`}
+              style={{ fontSize: 'clamp(2.6rem, 5.6vw + 0.5rem, 7.5rem)' }}
+            >
+              {s.hero_title}
+            </h1>
+            <div>
+              <p className={`max-w-[38ch] text-[0.9375rem] leading-[1.75] sm:text-[1rem] ${tone.sub}`}>{s.hero_subtitle}</p>
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-7">
+                <Link href="/bo-suu-tap" className={`rounded-full px-6 py-3 text-[0.875rem] font-medium transition-colors ${tone.btn}`}>
                   Xem bộ sưu tập
                 </Link>
                 <InstaButton
                   handle={s.instagram}
                   label="Tư vấn qua Instagram"
-                  className={`inline-flex items-center gap-2 text-[0.875rem] font-medium underline underline-offset-[6px] transition-opacity hover:opacity-60 ${SUB[t.mobile]} ${SUB_SM[t.desktop]}`}
+                  className={`inline-flex items-center gap-2 text-[0.875rem] font-medium underline underline-offset-[6px] transition-opacity hover:opacity-60 ${tone.sub}`}
                 />
               </div>
             </div>
-
             {hero.detail?.image && (
-              <figure className={`hidden w-[180px] lg:block xl:w-[200px] ${TXT_SM[t.desktop]}`}>
+              <figure className="hidden w-[150px] lg:block xl:w-[170px]">
                 <div className="aspect-[3/4] overflow-hidden rounded-xl">
-                  <Media img={hero.detail.image} focus={hero.detail.focus} alt={hero.detail.caption || 'Chi tiết váy'} variant="full" tone="veil" />
+                  <Media img={hero.detail.image} focus={hero.detail.focus} alt={hero.detail.caption || 'Chi tiết váy'} variant="full" />
                 </div>
-                {hero.detail.caption && <figcaption className={`mt-2.5 text-[0.75rem] leading-5 ${SUB_SM[t.desktop]}`}>{hero.detail.caption}</figcaption>}
+                {hero.detail.caption && <figcaption className={`mt-2 text-[0.75rem] leading-5 ${tone.sub}`}>{hero.detail.caption}</figcaption>}
               </figure>
             )}
           </div>
@@ -123,7 +109,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- Lời mở: chữ thay cho ảnh ---------- */}
-      <section className="wrap pb-16 pt-10 sm:pb-24 sm:pt-16">
+      <section className="wrap pb-16 sm:pb-24">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)]">
           <p className="meta lg:pt-3">Về chúng tôi</p>
           <p className="max-w-[30ch] font-display leading-[1.28] tracking-[-0.015em] text-ink" style={{ fontSize: 'clamp(1.6rem, 2.9vw, 2.9rem)' }}>

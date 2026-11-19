@@ -9,7 +9,7 @@ export const HOME_SLOTS: { slot: HomeSlot; label: string; hint: string; ratio: s
   {
     slot: 'hero',
     label: 'Ảnh lớn đầu trang',
-    hint: 'Ảnh ngang tràn toàn màn hình — thứ khách thấy đầu tiên. Chữ nằm bên trái (máy tính) và phía dưới (điện thoại), nên chọn ảnh cô dâu ở giữa hoặc lệch phải, nền thoáng.',
+    hint: 'Ảnh ngang tràn chiều ngang màn hình, để trơn không có chữ đè lên — thứ khách thấy đầu tiên. Tiêu đề và nút nằm ngay bên dưới ảnh.',
     ratio: '16 / 9',
   },
   {
@@ -22,7 +22,7 @@ export const HOME_SLOTS: { slot: HomeSlot; label: string; hint: string; ratio: s
   {
     slot: 'hero_detail',
     label: 'Ảnh chi tiết nhỏ',
-    hint: 'Cận cảnh ren, voan, đường may hoặc phụ kiện. Nằm ở góc phải ảnh lớn (chỉ hiện trên máy tính).',
+    hint: 'Cận cảnh ren, voan, đường may hoặc phụ kiện. Nằm nhỏ bên phải phần chữ dưới ảnh bìa (chỉ hiện trên máy tính).',
     ratio: '3 / 4',
     optional: true,
   },

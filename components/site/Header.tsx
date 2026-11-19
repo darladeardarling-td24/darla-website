@@ -17,7 +17,7 @@ const logo = (t: Tone) => (t === 'sand' ? '/logo-latte.png' : t === 'ink' ? '/lo
 export default function Header({ season, instagram, heroTone }: Props) {
   const [open, setOpen] = useState(false)
   const path = usePathname()
-  const overlay = path === '/'
+  const overlay = false // ảnh bìa không còn chữ đè lên
   const m = overlay ? heroTone.mobile : 'ink'
   const d = overlay ? heroTone.desktop : 'ink'
 
