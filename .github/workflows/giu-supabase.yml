@@ -21,8 +21,12 @@ jobs:
           SITE_URL: ${{ vars.SITE_URL || 'https://darla-website.vercel.app' }}
         run: |
           echo "Gọi $SITE_URL/api/giu-ket-noi"
-          curl -fsS --retry 4 --retry-delay 20 --retry-all-errors --max-time 30 "$SITE_URL/api/giu-ket-noi"
-          echo
+          # -L: đi theo chuyển hướng (ví dụ khi đổi tên miền); -w: in địa chỉ cuối cùng để dễ kiểm tra
+          body=$(curl -fsSL --retry 4 --retry-delay 20 --retry-all-errors --max-time 30 \
+            -w '\n%{http_code} %{url_effective}' "$SITE_URL/api/giu-ket-noi")
+          echo "$body"
+          # Chỉ coi là thành công khi web thật sự đọc được dữ liệu từ Supabase
+          echo "$body" | grep -q '"ok":true' || { echo "::error::Không đọc được Supabase. Kiểm tra địa chỉ web (biến SITE_URL) hoặc project Supabase có đang bị tạm dừng."; exit 1; }
 
       # GitHub tự tắt lịch chạy của repo công khai nếu repo không có hoạt động trong 60 ngày.
       # Bước này bật lại lịch mỗi lần chạy để tác vụ không bao giờ bị tắt.
