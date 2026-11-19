@@ -18,7 +18,7 @@ jobs:
       - name: Gọi vào web để đọc dữ liệu từ Supabase
         env:
           # Đổi địa chỉ web trong GitHub → Settings → Secrets and variables → Actions → Variables → SITE_URL
-          SITE_URL: ${{ vars.SITE_URL || 'https://darla-website.vercel.app' }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://darladeardarling.vercel.app' }}
         run: |
           echo "Gọi $SITE_URL/api/giu-ket-noi"
           # -L: đi theo chuyển hướng (ví dụ khi đổi tên miền); -w: in địa chỉ cuối cùng để dễ kiểm tra
