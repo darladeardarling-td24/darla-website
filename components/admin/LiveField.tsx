@@ -10,8 +10,11 @@ type Props = { images: Img[]; onChange: (v: Img[]) => void }
  * Ảnh sống cho ảnh bìa của váy: chọn video từ điện thoại → chọn đoạn 2–3 giây →
  * tự nén ngay trên máy (không cần phần mềm khác) → tải lên.
  */
+export const MAX_LIVE = 3
+
 export default function LiveField({ images, onChange }: Props) {
-  const cover = images[0]
+  const liveCount = images.filter((im) => im.live).length
+  const full = liveCount >= MAX_LIVE
   const toast = useToast()
   const input = useRef<HTMLInputElement>(null)
   const preview = useRef<HTMLVideoElement>(null)
@@ -64,9 +67,8 @@ export default function LiveField({ images, onChange }: Props) {
       const r = await makeLive(file, { start, duration: len }, setPct)
       setStage('upload')
       const { video, poster } = await uploadLive(r)
-      const next = images.length ? [{ ...images[0], live: video }, ...images.slice(1)] : [{ url: poster, thumb: poster, live: video }]
-      onChange(next)
-      toast(`Đã tạo ảnh sống: ${(r.inputKB / 1024).toFixed(1)}MB → ${r.outputKB}KB. Bấm Lưu để cập nhật lên web.`)
+      onChange([...images, { url: poster, thumb: poster, live: video }])
+      toast(`Đã thêm ảnh sống: ${(r.inputKB / 1024).toFixed(1)}MB → ${r.outputKB}KB. Dùng nút ‹ › ở hàng ảnh để đổi vị trí, rồi bấm Lưu.`)
       setFile(null)
     } catch (e) {
       toast((e as Error).message || 'Không tạo được ảnh sống.', 'error')
@@ -81,30 +83,31 @@ export default function LiveField({ images, onChange }: Props) {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="max-w-xl">
-          <p className="text-[0.8125rem] font-medium">Ảnh sống (video 2–3 giây)</p>
+          <p className="text-[0.8125rem] font-medium">
+            Ảnh sống (video 2–3 giây) <span className="meta">{liveCount}/{MAX_LIVE}</span>
+          </p>
           <p className="meta mt-1">
-            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén còn khoảng 150–300KB. Ảnh bìa sẽ chuyển động khi khách rê chuột hoặc lướt tới.
+            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén còn khoảng 150–300KB. Ảnh sống được thêm vào hàng ảnh phía trên: dùng nút ‹ › để sắp thứ tự cùng ảnh thường. Nếu ảnh sống đứng đầu, ảnh bìa của váy sẽ chuyển động.
           </p>
         </div>
         {!file && (
-          <button type="button" onClick={() => input.current?.click()} className="btn-line !px-4 !py-2 text-[0.875rem]">
-            {cover?.live ? 'Tạo lại từ video khác' : 'Chọn video'}
+          <button
+            type="button"
+            disabled={full}
+            onClick={() => input.current?.click()}
+            className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-40"
+            title={full ? `Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.` : undefined}
+          >
+            {full ? `Đã đủ ${MAX_LIVE} ảnh sống` : 'Thêm ảnh sống từ video'}
           </button>
         )}
-        <input ref={input} type="file" accept="video/*,.mov,.mp4,.m4v" hidden onChange={(e) => e.target.files?.[0] && pick(e.target.files[0])} />
+        <input ref={input} type="file" accept="video/*,.mov,.mp4,.m4v" hidden onChange={(e) => {
+            const f = e.target.files?.[0]
+            e.target.value = '' // cho phép chọn lại cùng một video để cắt đoạn khác
+            if (f) pick(f)
+          }}
+        />
       </div>
-
-      {cover?.live && !file && (
-        <div className="mt-4 flex items-end gap-4">
-          <video src={cover.live} poster={cover.thumb} muted loop autoPlay playsInline className="aspect-[3/4] w-32 rounded-xl bg-stone object-cover" />
-          <div className="space-y-2">
-            <p className="text-[0.875rem]">Ảnh bìa đang có ảnh sống.</p>
-            <button type="button" onClick={() => onChange([{ ...cover, live: undefined }, ...images.slice(1)])} className="text-[0.8125rem] text-[#7a1f1f] underline underline-offset-4">
-              Gỡ ảnh sống
-            </button>
-          </div>
-        </div>
-      )}
 
       {file && (
         <div className="mt-4 grid gap-5 sm:grid-cols-[180px_1fr]">

@@ -24,7 +24,7 @@ export default function Catalog({ products, categories, collections, attributes 
   const [price, setPrice] = useState('')
   const [onlyNew, setOnlyNew] = useState(false)
   const [sort, setSort] = useState<Sort>('')
-  const [view, setView] = useState<'list' | 'grid'>('list')
+  const [view, setView] = useState<'list' | 'grid'>('grid')
   const [panel, setPanel] = useState(false)
   const [ready, setReady] = useState(false)
 
@@ -236,8 +236,8 @@ export default function Catalog({ products, categories, collections, attributes 
               <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
-          <div className="hidden items-center gap-1 text-[0.8125rem] sm:flex" aria-label="Kiểu hiển thị">
-            {(['list', 'grid'] as const).map((v) => (
+          <div className="flex items-center gap-1 text-[0.8125rem]" aria-label="Kiểu hiển thị">
+            {(['grid', 'list'] as const).map((v) => (
               <button key={v} onClick={() => setView(v)} aria-pressed={view === v} className={`px-2 py-1 ${view === v ? 'underline underline-offset-[6px]' : 'text-taupe hover:text-ink'}`}>
                 {v === 'list' ? 'Danh sách' : 'Lưới ảnh'}
               </button>
