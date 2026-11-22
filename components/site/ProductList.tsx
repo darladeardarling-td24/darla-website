@@ -8,8 +8,8 @@ import Media from './Media'
 /** Dấu hiệu ảnh sống, giống biểu tượng Live Photo */
 function LiveBadge() {
   return (
-    <span className="absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full bg-veil/85 text-mocha" title="Ảnh sống" aria-label="Ảnh sống">
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+    <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-veil/85 text-mocha sm:right-2.5 sm:top-2.5 sm:h-7 sm:w-7" title="Ảnh sống" aria-label="Ảnh sống">
+      <svg viewBox="0 0 24 24" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
         <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" />
         <circle cx="12" cy="12" r="5.6" />
         <circle cx="12" cy="12" r="9" strokeDasharray="1.4 2.2" />
@@ -72,22 +72,22 @@ export default function ProductList({ products, categories, collections = [], vi
           ))}
         </ul>
       ) : (
-        <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 xl:grid-cols-4">
+        <ul className="grid grid-cols-3 gap-x-2 gap-y-5 sm:gap-x-5 sm:gap-y-8 xl:grid-cols-4">
           {products.map((p) => (
             <li key={p.id}>
               <Link href={`/bo-suu-tap/${p.slug}`} className="group block">
-                <span className="relative block aspect-[3/4] overflow-hidden rounded-2xl">
+                <span className="relative block aspect-[3/4] overflow-hidden rounded-xl sm:rounded-2xl">
                   <Media img={p.images[0]} alt={p.name} className="transition-transform duration-700 group-hover:scale-[1.03]" />
-                  {p.is_new && <span className="absolute left-2.5 top-2.5 rounded-full bg-veil/90 px-2.5 py-0.5 text-[0.6875rem]">Mới</span>}
+                  {p.is_new && <span className="absolute left-1.5 top-1.5 rounded-full bg-veil/90 px-1.5 py-px text-[0.625rem] sm:left-2.5 sm:top-2.5 sm:px-2.5 sm:py-0.5 sm:text-[0.6875rem]">Mới</span>}
                   {p.images[0]?.live && <LiveBadge />}
                 </span>
-                <span className="mt-3 flex items-baseline justify-between gap-2">
-                  <span className="font-display text-xl sm:text-2xl">{p.name}</span>
-                  <span className="meta">{p.code}</span>
+                <span className="mt-2 flex items-baseline justify-between gap-2 sm:mt-3">
+                  <span className="truncate font-display text-[1rem] leading-tight sm:text-2xl">{p.name}</span>
+                  <span className="meta hidden sm:inline">{p.code}</span>
                 </span>
-                <span className="meta block">{groupOf(p)}</span>
-                <span className="mt-0.5 block text-[0.875rem]">
-                  <span className="text-taupe">Thuê từ </span>
+                <span className="meta hidden sm:block">{groupOf(p)}</span>
+                <span className="mt-0.5 block text-[0.75rem] sm:text-[0.875rem]">
+                  <span className="hidden text-taupe sm:inline">Thuê từ </span>
                   {shortPrice(p.price_rent)}
                 </span>
               </Link>
