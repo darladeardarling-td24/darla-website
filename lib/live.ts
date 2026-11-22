@@ -165,3 +165,61 @@ export async function uploadLive(r: LiveResult): Promise<{ video: string; poster
   const [video, poster] = await Promise.all([up(paths.video, r.mp4), up(paths.poster, r.poster)])
   return { video, poster }
 }
+
+/** Kiểu nén của video: đọc tên bộ mã trong file MP4/MOV */
+async function videoCodec(file: File): Promise<'h264' | 'hevc' | 'other'> {
+  const b = new Uint8Array(await file.arrayBuffer())
+  const has = (s: string) => {
+    const c = [...s].map((x) => x.charCodeAt(0))
+    for (let i = 0; i < b.length - 4; i++) if (b[i] === c[0] && b[i + 1] === c[1] && b[i + 2] === c[2] && b[i + 3] === c[3]) return true
+    return false
+  }
+  if (has('avc1') || has('avc3')) return 'h264'
+  if (has('hvc1') || has('hev1')) return 'hevc'
+  return 'other'
+}
+
+export const READY_MAX_MB = 5
+export const READY_MAX_SECONDS = 8
+
+/**
+ * Ảnh sống tự làm sẵn bên ngoài (CapCut, HandBrake…): kiểm tra rồi dùng nguyên file, không nén lại.
+ * Chỉ nhận MP4 H.264 (mọi trình duyệt đều phát được), ngắn và nhẹ.
+ */
+export async function prepareReadyLive(file: File): Promise<LiveResult> {
+  if (!/\.(mp4|m4v|mov)$/i.test(file.name)) throw new Error('Hãy chọn file video MP4.')
+  if (file.size > READY_MAX_MB * 1024 * 1024)
+    throw new Error(`Video nặng ${(file.size / 1024 / 1024).toFixed(1)}MB, tối đa ${READY_MAX_MB}MB. Hãy xuất lại ở 720p hoặc 1080p, cắt còn 2–3 giây.`)
+  const codec = await videoCodec(file)
+  if (codec === 'hevc')
+    throw new Error('Video đang ở dạng HEVC (mặc định của iPhone), nhiều máy không phát được. Hãy xuất lại dạng H.264, hoặc dùng nút “Thêm ảnh sống từ video”.')
+  if (codec !== 'h264') throw new Error('Video không phải dạng H.264. Hãy xuất lại dạng MP4 H.264.')
+
+  const url = URL.createObjectURL(file)
+  const v = document.createElement('video')
+  v.muted = true
+  v.playsInline = true
+  v.preload = 'auto'
+  v.src = url
+  try {
+    await new Promise<void>((ok, bad) => {
+      v.onloadeddata = () => ok()
+      v.onerror = () => bad(new Error('Trình duyệt không mở được video này. Hãy xuất lại dạng MP4 H.264.'))
+    })
+    if (v.duration > READY_MAX_SECONDS + 0.5)
+      throw new Error(`Video dài ${v.duration.toFixed(1)} giây, tối đa ${READY_MAX_SECONDS} giây. Ảnh sống đẹp nhất khi dài 2–3 giây.`)
+    // Ảnh đại diện: khung đầu, cạnh ngắn tối đa 1080px
+    const k = Math.min(1, 1080 / Math.min(v.videoWidth, v.videoHeight))
+    const c = document.createElement('canvas')
+    c.width = Math.round(v.videoWidth * k)
+    c.height = Math.round(v.videoHeight * k)
+    c.getContext('2d')!.drawImage(v, 0, 0, c.width, c.height)
+    const poster = await new Promise<Blob>((ok, bad) => c.toBlob((b) => (b ? ok(b) : bad(new Error('Không tạo được ảnh đại diện.'))), 'image/jpeg', 0.85))
+    const kb = Math.round(file.size / 1024)
+    return { mp4: new Blob([file], { type: 'video/mp4' }), poster, inputKB: kb, outputKB: kb }
+  } finally {
+    v.removeAttribute('src')
+    v.load()
+    URL.revokeObjectURL(url)
+  }
+}

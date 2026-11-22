@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { makeLive, uploadLive } from '@/lib/live'
+import { makeLive, prepareReadyLive, uploadLive, READY_MAX_MB } from '@/lib/live'
 import type { Img } from '@/lib/types'
 import { useToast } from './ui'
 
@@ -17,6 +17,9 @@ export default function LiveField({ images, onChange }: Props) {
   const full = liveCount >= MAX_LIVE
   const toast = useToast()
   const input = useRef<HTMLInputElement>(null)
+  const readyInput = useRef<HTMLInputElement>(null)
+  const [readyBusy, setReadyBusy] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
   const preview = useRef<HTMLVideoElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [url, setUrl] = useState('')
@@ -57,6 +60,7 @@ export default function LiveField({ images, onChange }: Props) {
 
   async function create() {
     if (!file) return
+    if (full) return toast(`Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.`, 'error')
     try {
       setStage('encode')
       setPct(0)
@@ -70,6 +74,21 @@ export default function LiveField({ images, onChange }: Props) {
       toast((e instanceof Error && e.message) || String(e || '') || 'Không tạo được ảnh sống.', 'error')
     }
     setStage('')
+  }
+
+  async function uploadReady(f: File) {
+    if (full) return toast(`Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.`, 'error')
+    setReadyBusy(true)
+    try {
+      const r = await prepareReadyLive(f)
+      const { video, poster } = await uploadLive(r)
+      onChange([...images, { url: poster, thumb: poster, live: video }])
+      toast(`Đã thêm ảnh sống làm sẵn (${r.outputKB}KB). Dùng nút ‹ › ở hàng ảnh để đổi vị trí, rồi bấm Lưu.`)
+      if (r.outputKB > 1024) toast('Video hơi nặng: nên dưới 1MB để khách xem mượt trên điện thoại.', 'error')
+    } catch (e) {
+      toast((e instanceof Error && e.message) || 'Không tải lên được ảnh sống.', 'error')
+    }
+    setReadyBusy(false)
   }
 
   const busy = stage !== ''
@@ -87,16 +106,34 @@ export default function LiveField({ images, onChange }: Props) {
           </p>
         </div>
         {!file && (
-          <button
-            type="button"
-            disabled={full}
-            onClick={() => input.current?.click()}
-            className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-40"
-            title={full ? `Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.` : undefined}
-          >
-            {full ? `Đã đủ ${MAX_LIVE} ảnh sống` : 'Thêm ảnh sống từ video'}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={full || readyBusy}
+              onClick={() => input.current?.click()}
+              className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-40"
+              title={full ? `Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.` : undefined}
+            >
+              {full ? `Đã đủ ${MAX_LIVE} ảnh sống` : 'Thêm ảnh sống từ video'}
+            </button>
+            {!full && (
+              <button
+                type="button"
+                disabled={readyBusy}
+                onClick={() => readyInput.current?.click()}
+                className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-60"
+              >
+                {readyBusy ? 'Đang tải lên…' : 'Tải ảnh sống làm sẵn (MP4)'}
+              </button>
+            )}
+          </div>
         )}
+        <input ref={readyInput} type="file" accept="video/mp4,.mp4,.m4v,.mov" hidden onChange={(e) => {
+            const f = e.target.files?.[0]
+            e.target.value = ''
+            if (f) uploadReady(f)
+          }}
+        />
         <input ref={input} type="file" accept="video/*,.mov,.mp4,.m4v" hidden onChange={(e) => {
             const f = e.target.files?.[0]
             e.target.value = '' // cho phép chọn lại cùng một video để cắt đoạn khác
@@ -104,6 +141,22 @@ export default function LiveField({ images, onChange }: Props) {
           }}
         />
       </div>
+
+      {!file && (
+        <div className="mt-3">
+          <button type="button" onClick={() => setShowGuide((x) => !x)} className="text-[0.8125rem] text-taupe underline underline-offset-4">
+            {showGuide ? 'Ẩn hướng dẫn làm ảnh sống sẵn' : 'Cách tự làm ảnh sống sẵn bằng CapCut'}
+          </button>
+          {showGuide && (
+            <ol className="meta mt-2 max-w-xl list-decimal space-y-1 pl-5">
+              <li>Mở video trong CapCut, cắt còn 2–3 giây đẹp nhất, tắt tiếng.</li>
+              <li>Bấm xuất: độ phân giải 720p hoặc 1080p, tốc độ khung hình 30.</li>
+              <li>Tắt HDR và tắt HEVC (để dạng H.264) nếu có tuỳ chọn này.</li>
+              <li>File xuất ra là MP4, nên dưới 1MB (tối đa {READY_MAX_MB}MB). Bấm “Tải ảnh sống làm sẵn (MP4)” để tải lên, web dùng nguyên file, không nén lại.</li>
+            </ol>
+          )}
+        </div>
+      )}
 
       {file && (
         <div className="mt-4 grid gap-5 sm:grid-cols-[180px_1fr]">
