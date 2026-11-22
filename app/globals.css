@@ -39,9 +39,6 @@
   html { scroll-behavior: auto; }
 }
 
-/* Ảnh sống luôn hiển thị ở độ sáng thường (không kiểu HDR chói) trên trình duyệt hỗ trợ */
-video { dynamic-range-limit: standard; }
-
 /* Ẩn thanh cuộn cho hàng ảnh vuốt ngang */
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
