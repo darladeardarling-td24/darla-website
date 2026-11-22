@@ -1,6 +1,7 @@
 'use client'
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 import { supabaseBrowser } from './supabase/client'
+import { canMakeNative, makeLiveNative } from './live-native'
 
 /**
  * Tạo "ảnh sống" từ video quay bằng điện thoại (kể cả video HEVC .MOV 4K của iPhone):
@@ -67,6 +68,18 @@ function resetFFmpeg() {
 }
 
 export async function makeLive(file: File, opts: { start: number; duration: number }, onProgress?: (p: number) => void): Promise<LiveResult> {
+  const inputKB = Math.round(file.size / 1024)
+  // 1) Cách chính: để trình duyệt tự xử lý (nhanh, đúng màu, ổn định với video iPhone)
+  if (canMakeNative()) {
+    try {
+      const r = await makeLiveNative(file, opts, onProgress)
+      return { ...r, inputKB, outputKB: Math.round(r.mp4.size / 1024) }
+    } catch (e) {
+      console.warn('Tạo ảnh sống bằng trình duyệt lỗi, chuyển sang bộ xử lý dự phòng:', e)
+      onProgress?.(0)
+    }
+  }
+  // 2) Dự phòng: bộ xử lý ffmpeg chạy trong trình duyệt
   try {
     return await makeLiveOnce(file, opts, onProgress)
   } catch (first) {
@@ -79,6 +92,28 @@ export async function makeLive(file: File, opts: { start: number; duration: numb
       console.error('Tạo ảnh sống lỗi:', first, e)
       throw new Error(describe(e))
     }
+  }
+}
+
+/** Ảnh đại diện lấy từ khung đầu của video đã nén (H.264 trình duyệt nào cũng mở được) */
+async function posterFrom(mp4: Blob): Promise<Blob> {
+  const url = URL.createObjectURL(mp4)
+  const v = document.createElement('video')
+  v.muted = true
+  v.playsInline = true
+  v.src = url
+  try {
+    await new Promise<void>((ok, bad) => {
+      v.onloadeddata = () => ok()
+      v.onerror = () => bad(new Error('Không tạo được ảnh đại diện.'))
+    })
+    const c = document.createElement('canvas')
+    c.width = v.videoWidth
+    c.height = v.videoHeight
+    c.getContext('2d')!.drawImage(v, 0, 0)
+    return await new Promise<Blob>((ok, bad) => c.toBlob((b) => (b ? ok(b) : bad(new Error('Không tạo được ảnh đại diện.'))), 'image/jpeg', 0.85))
+  } finally {
+    URL.revokeObjectURL(url)
   }
 }
 
@@ -102,19 +137,14 @@ async function makeLiveOnce(file: File, opts: { start: number; duration: number 
       'out.mp4',
     ])
     if (code !== 0) throw new Error('mã lỗi ' + code)
-    await ff.exec(['-i', 'out.mp4', '-frames:v', '1', '-q:v', '3', 'poster.jpg'])
     const mp4 = (await ff.readFile('out.mp4')) as Uint8Array
-    const jpg = (await ff.readFile('poster.jpg')) as Uint8Array
-    const out = {
-      mp4: new Blob([mp4.slice()], { type: 'video/mp4' }),
-      poster: new Blob([jpg.slice()], { type: 'image/jpeg' }),
-      inputKB: Math.round(file.size / 1024),
-      outputKB: Math.round(mp4.byteLength / 1024),
-    }
-    return out
+    const video = new Blob([mp4.slice()], { type: 'video/mp4' })
+    // Bộ xử lý thường không chạy ổn lần thứ hai liên tiếp: nạp lại cho lần sau
+    resetFFmpeg()
+    return { mp4: video, poster: await posterFrom(video), inputKB: Math.round(file.size / 1024), outputKB: Math.round(mp4.byteLength / 1024) }
   } finally {
     ff.off('progress', handler)
-    for (const f of [input, 'out.mp4', 'poster.jpg']) await ff.deleteFile(f).catch(() => {})
+    if (ffmpeg === ff) for (const f of [input, 'out.mp4']) await ff.deleteFile(f).catch(() => {})
   }
 }
 

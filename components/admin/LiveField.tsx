@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { loadFFmpeg, makeLive, uploadLive } from '@/lib/live'
+import { makeLive, uploadLive } from '@/lib/live'
 import type { Img } from '@/lib/types'
 import { useToast } from './ui'
 
@@ -39,8 +39,6 @@ export default function LiveField({ images, onChange }: Props) {
     setDuration(null)
     setCanPreview(true)
     setStart(0)
-    // Tải sẵn bộ xử lý trong lúc nhân viên chọn đoạn
-    loadFFmpeg().catch(() => {})
   }
 
   function playSegment() {
@@ -60,8 +58,6 @@ export default function LiveField({ images, onChange }: Props) {
   async function create() {
     if (!file) return
     try {
-      setStage('load')
-      await loadFFmpeg()
       setStage('encode')
       setPct(0)
       const r = await makeLive(file, { start, duration: len }, setPct)
