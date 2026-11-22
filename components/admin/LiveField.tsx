@@ -71,7 +71,7 @@ export default function LiveField({ images, onChange }: Props) {
       toast(`Đã thêm ảnh sống: ${(r.inputKB / 1024).toFixed(1)}MB → ${r.outputKB}KB. Dùng nút ‹ › ở hàng ảnh để đổi vị trí, rồi bấm Lưu.`)
       setFile(null)
     } catch (e) {
-      toast((e as Error).message || 'Không tạo được ảnh sống.', 'error')
+      toast((e instanceof Error && e.message) || String(e || '') || 'Không tạo được ảnh sống.', 'error')
     }
     setStage('')
   }

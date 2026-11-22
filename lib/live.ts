@@ -51,7 +51,38 @@ export function loadFFmpeg(): Promise<FFmpeg> {
 
 export type LiveResult = { mp4: Blob; poster: Blob; inputKB: number; outputKB: number }
 
+/** Đổi mọi kiểu lỗi (kể cả lỗi không có nội dung từ bộ xử lý) thành câu dễ hiểu */
+function describe(e: unknown): string {
+  const raw = e instanceof Error ? e.message : typeof e === 'string' ? e : ''
+  if (/memory|out of bounds|abort|OOM/i.test(raw))
+    return 'Trình duyệt hết bộ nhớ khi xử lý video. Hãy đóng bớt tab rồi thử lại, hoặc dùng Chrome trên máy tính.'
+  return raw ? `Không xử lý được video (${raw}).` : 'Không xử lý được video. Hãy tải lại trang rồi thử lại.'
+}
+
+/** Bỏ bộ xử lý đang hỏng để lần sau nạp lại từ đầu */
+function resetFFmpeg() {
+  try { ffmpeg?.terminate() } catch {}
+  ffmpeg = null
+  loading = null
+}
+
 export async function makeLive(file: File, opts: { start: number; duration: number }, onProgress?: (p: number) => void): Promise<LiveResult> {
+  try {
+    return await makeLiveOnce(file, opts, onProgress)
+  } catch (first) {
+    // Bộ xử lý có thể bị hỏng sau lần chạy trước: nạp lại và thử thêm một lần
+    resetFFmpeg()
+    try {
+      return await makeLiveOnce(file, opts, onProgress)
+    } catch (e) {
+      resetFFmpeg()
+      console.error('Tạo ảnh sống lỗi:', first, e)
+      throw new Error(describe(e))
+    }
+  }
+}
+
+async function makeLiveOnce(file: File, opts: { start: number; duration: number }, onProgress?: (p: number) => void): Promise<LiveResult> {
   const ff = await loadFFmpeg()
   const ext = (file.name.split('.').pop() || 'mov').toLowerCase()
   const input = `in.${ext}`
@@ -70,7 +101,7 @@ export async function makeLive(file: File, opts: { start: number; duration: numb
       '-movflags', '+faststart',
       'out.mp4',
     ])
-    if (code !== 0) throw new Error('Không xử lý được video này. Hãy thử một video khác hoặc chọn đoạn bắt đầu sớm hơn.')
+    if (code !== 0) throw new Error('mã lỗi ' + code)
     await ff.exec(['-i', 'out.mp4', '-frames:v', '1', '-q:v', '3', 'poster.jpg'])
     const mp4 = (await ff.readFile('out.mp4')) as Uint8Array
     const jpg = (await ff.readFile('poster.jpg')) as Uint8Array
