@@ -56,17 +56,37 @@ export async function makeLive(file: File, opts: { start: number; duration: numb
   const ext = (file.name.split('.').pop() || 'mov').toLowerCase()
   const input = `in.${ext}`
   const handler = ({ progress }: { progress: number }) => onProgress?.(Math.max(0, Math.min(1, progress)))
-  ff.on('progress', handler)
   try {
     await ff.writeFile(input, new Uint8Array(await file.arrayBuffer()))
+
+    // Đọc thông tin video để biết có phải HDR không (iPhone mặc định quay HDR – HLG, 10-bit, BT.2020)
+    const info: string[] = []
+    const onLog = ({ message }: { message: string }) => info.push(message)
+    ff.on('log', onLog)
+    await ff.exec(['-hide_banner', '-i', input]).catch(() => {})
+    ff.off('log', onLog)
+    const meta = info.join('\n')
+    const hdr = /arib-std-b67/.test(meta) ? 'hlg' : /smpte2084/.test(meta) ? 'pq' : null
+
+    // Chuyển HDR về màu chuẩn SDR (BT.709) để ảnh sống không bị chói/lệch màu so với ảnh thường
+    const toSdr =
+      hdr === 'hlg'
+        ? 'zscale=t=bt709:p=bt709:m=bt709:r=tv,'
+        : hdr === 'pq'
+          ? 'zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,'
+          : ''
+
+    ff.on('progress', handler)
     const code = await ff.exec([
       '-ss', String(Math.max(0, opts.start)),
       '-t', String(opts.duration),
       '-i', input,
       '-an',
       // cạnh ngắn 720px (dọc hay ngang đều đúng), tự xoay theo hướng quay của iPhone
-      '-vf', "scale='if(gt(iw,ih),-2,720)':'if(gt(iw,ih),720,-2)':flags=lanczos,fps=30,format=yuv420p",
+      '-vf', `scale='if(gt(iw,ih),-2,720)':'if(gt(iw,ih),720,-2)':flags=lanczos,fps=30,${toSdr}format=yuv420p`,
       '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '27', '-profile:v', 'main',
+      // gắn nhãn màu SDR chuẩn để Safari/iPhone không hiển thị kiểu HDR
+      '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-color_range', 'tv',
       '-movflags', '+faststart',
       'out.mp4',
     ])
