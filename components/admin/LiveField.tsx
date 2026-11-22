@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { makeLive, prepareReadyLive, uploadLive, READY_MAX_MB, type LiveQuality } from '@/lib/live'
+import { loadFFmpeg, makeLive, uploadLive } from '@/lib/live'
 import type { Img } from '@/lib/types'
 import { useToast } from './ui'
 
@@ -17,9 +17,6 @@ export default function LiveField({ images, onChange }: Props) {
   const full = liveCount >= MAX_LIVE
   const toast = useToast()
   const input = useRef<HTMLInputElement>(null)
-  const readyInput = useRef<HTMLInputElement>(null)
-  const [readyBusy, setReadyBusy] = useState(false)
-  const [showGuide, setShowGuide] = useState(false)
   const preview = useRef<HTMLVideoElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [url, setUrl] = useState('')
@@ -27,7 +24,6 @@ export default function LiveField({ images, onChange }: Props) {
   const [canPreview, setCanPreview] = useState(true)
   const [start, setStart] = useState(0)
   const [len, setLen] = useState(3)
-  const [quality, setQuality] = useState<LiveQuality>('sharp')
   const [stage, setStage] = useState<'' | 'load' | 'encode' | 'upload'>('')
   const [pct, setPct] = useState(0)
 
@@ -43,6 +39,8 @@ export default function LiveField({ images, onChange }: Props) {
     setDuration(null)
     setCanPreview(true)
     setStart(0)
+    // Tải sẵn bộ xử lý trong lúc nhân viên chọn đoạn
+    loadFFmpeg().catch(() => {})
   }
 
   function playSegment() {
@@ -61,35 +59,21 @@ export default function LiveField({ images, onChange }: Props) {
 
   async function create() {
     if (!file) return
-    if (full) return toast(`Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.`, 'error')
     try {
+      setStage('load')
+      await loadFFmpeg()
       setStage('encode')
       setPct(0)
-      const r = await makeLive(file, { start, duration: len, quality }, setPct)
+      const r = await makeLive(file, { start, duration: len }, setPct)
       setStage('upload')
       const { video, poster } = await uploadLive(r)
       onChange([...images, { url: poster, thumb: poster, live: video }])
       toast(`Đã thêm ảnh sống: ${(r.inputKB / 1024).toFixed(1)}MB → ${r.outputKB}KB. Dùng nút ‹ › ở hàng ảnh để đổi vị trí, rồi bấm Lưu.`)
       setFile(null)
     } catch (e) {
-      toast((e instanceof Error && e.message) || String(e || '') || 'Không tạo được ảnh sống.', 'error')
+      toast((e as Error).message || 'Không tạo được ảnh sống.', 'error')
     }
     setStage('')
-  }
-
-  async function uploadReady(f: File) {
-    if (full) return toast(`Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.`, 'error')
-    setReadyBusy(true)
-    try {
-      const r = await prepareReadyLive(f)
-      const { video, poster } = await uploadLive(r)
-      onChange([...images, { url: poster, thumb: poster, live: video }])
-      toast(`Đã thêm ảnh sống làm sẵn (${r.outputKB}KB). Dùng nút ‹ › ở hàng ảnh để đổi vị trí, rồi bấm Lưu.`)
-      if (r.outputKB > 1024) toast('Video hơi nặng: nên dưới 1MB để khách xem mượt trên điện thoại.', 'error')
-    } catch (e) {
-      toast((e instanceof Error && e.message) || 'Không tải lên được ảnh sống.', 'error')
-    }
-    setReadyBusy(false)
   }
 
   const busy = stage !== ''
@@ -103,38 +87,20 @@ export default function LiveField({ images, onChange }: Props) {
             Ảnh sống (video 2–3 giây) <span className="meta">{liveCount}/{MAX_LIVE}</span>
           </p>
           <p className="meta mt-1">
-            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén nhẹ (khoảng 0,5–1MB ở mức Nét, 300–500KB ở mức Nhẹ). Ảnh sống được thêm vào hàng ảnh phía trên: dùng nút ‹ › để sắp thứ tự cùng ảnh thường. Nếu ảnh sống đứng đầu, ảnh bìa của váy sẽ chuyển động.
+            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén còn khoảng 150–300KB. Ảnh sống được thêm vào hàng ảnh phía trên: dùng nút ‹ › để sắp thứ tự cùng ảnh thường. Nếu ảnh sống đứng đầu, ảnh bìa của váy sẽ chuyển động.
           </p>
         </div>
         {!file && (
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              disabled={full || readyBusy}
-              onClick={() => input.current?.click()}
-              className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-40"
-              title={full ? `Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.` : undefined}
-            >
-              {full ? `Đã đủ ${MAX_LIVE} ảnh sống` : 'Thêm ảnh sống từ video'}
-            </button>
-            {!full && (
-              <button
-                type="button"
-                disabled={readyBusy}
-                onClick={() => readyInput.current?.click()}
-                className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-60"
-              >
-                {readyBusy ? 'Đang tải lên…' : 'Tải ảnh sống làm sẵn (MP4)'}
-              </button>
-            )}
-          </div>
+          <button
+            type="button"
+            disabled={full}
+            onClick={() => input.current?.click()}
+            className="btn-line !px-4 !py-2 text-[0.875rem] disabled:opacity-40"
+            title={full ? `Mỗi váy tối đa ${MAX_LIVE} ảnh sống. Gỡ bớt ở hàng ảnh phía trên để thêm mới.` : undefined}
+          >
+            {full ? `Đã đủ ${MAX_LIVE} ảnh sống` : 'Thêm ảnh sống từ video'}
+          </button>
         )}
-        <input ref={readyInput} type="file" accept="video/mp4,.mp4,.m4v,.mov" hidden onChange={(e) => {
-            const f = e.target.files?.[0]
-            e.target.value = ''
-            if (f) uploadReady(f)
-          }}
-        />
         <input ref={input} type="file" accept="video/*,.mov,.mp4,.m4v" hidden onChange={(e) => {
             const f = e.target.files?.[0]
             e.target.value = '' // cho phép chọn lại cùng một video để cắt đoạn khác
@@ -142,22 +108,6 @@ export default function LiveField({ images, onChange }: Props) {
           }}
         />
       </div>
-
-      {!file && (
-        <div className="mt-3">
-          <button type="button" onClick={() => setShowGuide((x) => !x)} className="text-[0.8125rem] text-taupe underline underline-offset-4">
-            {showGuide ? 'Ẩn hướng dẫn làm ảnh sống sẵn' : 'Cách tự làm ảnh sống sẵn bằng CapCut'}
-          </button>
-          {showGuide && (
-            <ol className="meta mt-2 max-w-xl list-decimal space-y-1 pl-5">
-              <li>Mở video trong CapCut, cắt còn 2–3 giây đẹp nhất, tắt tiếng.</li>
-              <li>Bấm xuất: độ phân giải 720p hoặc 1080p, tốc độ khung hình 30.</li>
-              <li>Tắt HDR và tắt HEVC (để dạng H.264) nếu có tuỳ chọn này.</li>
-              <li>File xuất ra là MP4, nên dưới 1MB (tối đa {READY_MAX_MB}MB). Bấm “Tải ảnh sống làm sẵn (MP4)” để tải lên, web dùng nguyên file, không nén lại.</li>
-            </ol>
-          )}
-        </div>
-      )}
 
       {file && (
         <div className="mt-4 grid gap-5 sm:grid-cols-[180px_1fr]">
@@ -199,24 +149,6 @@ export default function LiveField({ images, onChange }: Props) {
                     className={`rounded-full px-4 py-1.5 text-[0.8125rem] disabled:opacity-30 ${len === n ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
                   >
                     {n} giây
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="mb-1.5 text-[0.8125rem] font-medium">Chất lượng</p>
-              <div className="inline-flex rounded-full bg-oyster p-1">
-                {([
-                  ['sharp', 'Nét (1080p)'],
-                  ['light', 'Nhẹ (720p)'],
-                ] as const).map(([k, label]) => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setQuality(k)}
-                    className={`rounded-full px-4 py-1.5 text-[0.8125rem] ${quality === k ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
-                  >
-                    {label}
                   </button>
                 ))}
               </div>
