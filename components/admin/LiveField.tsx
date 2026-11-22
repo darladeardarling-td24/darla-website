@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { makeLive, prepareReadyLive, uploadLive, READY_MAX_MB } from '@/lib/live'
+import { makeLive, prepareReadyLive, uploadLive, READY_MAX_MB, type LiveQuality } from '@/lib/live'
 import type { Img } from '@/lib/types'
 import { useToast } from './ui'
 
@@ -27,6 +27,7 @@ export default function LiveField({ images, onChange }: Props) {
   const [canPreview, setCanPreview] = useState(true)
   const [start, setStart] = useState(0)
   const [len, setLen] = useState(3)
+  const [quality, setQuality] = useState<LiveQuality>('sharp')
   const [stage, setStage] = useState<'' | 'load' | 'encode' | 'upload'>('')
   const [pct, setPct] = useState(0)
 
@@ -64,7 +65,7 @@ export default function LiveField({ images, onChange }: Props) {
     try {
       setStage('encode')
       setPct(0)
-      const r = await makeLive(file, { start, duration: len }, setPct)
+      const r = await makeLive(file, { start, duration: len, quality }, setPct)
       setStage('upload')
       const { video, poster } = await uploadLive(r)
       onChange([...images, { url: poster, thumb: poster, live: video }])
@@ -102,7 +103,7 @@ export default function LiveField({ images, onChange }: Props) {
             Ảnh sống (video 2–3 giây) <span className="meta">{liveCount}/{MAX_LIVE}</span>
           </p>
           <p className="meta mt-1">
-            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén còn khoảng 150–300KB. Ảnh sống được thêm vào hàng ảnh phía trên: dùng nút ‹ › để sắp thứ tự cùng ảnh thường. Nếu ảnh sống đứng đầu, ảnh bìa của váy sẽ chuyển động.
+            Chọn video quay bằng điện thoại (iPhone quay .MOV cũng được). Web tự cắt, bỏ tiếng và nén nhẹ (khoảng 0,5–1MB ở mức Nét, 300–500KB ở mức Nhẹ). Ảnh sống được thêm vào hàng ảnh phía trên: dùng nút ‹ › để sắp thứ tự cùng ảnh thường. Nếu ảnh sống đứng đầu, ảnh bìa của váy sẽ chuyển động.
           </p>
         </div>
         {!file && (
@@ -198,6 +199,24 @@ export default function LiveField({ images, onChange }: Props) {
                     className={`rounded-full px-4 py-1.5 text-[0.8125rem] disabled:opacity-30 ${len === n ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
                   >
                     {n} giây
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-1.5 text-[0.8125rem] font-medium">Chất lượng</p>
+              <div className="inline-flex rounded-full bg-oyster p-1">
+                {([
+                  ['sharp', 'Nét (1080p)'],
+                  ['light', 'Nhẹ (720p)'],
+                ] as const).map(([k, label]) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setQuality(k)}
+                    className={`rounded-full px-4 py-1.5 text-[0.8125rem] ${quality === k ? 'bg-ink text-veil' : 'hover:bg-stone'}`}
+                  >
+                    {label}
                   </button>
                 ))}
               </div>

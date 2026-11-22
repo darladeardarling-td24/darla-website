@@ -9,8 +9,12 @@
 import { Muxer, ArrayBufferTarget } from 'mp4-muxer'
 
 const FPS = 30
-const SHORT_SIDE = 720
-const BITRATE = 800_000
+/** Hai mức chất lượng: nét (mặc định) và nhẹ */
+export type LiveQuality = 'sharp' | 'light'
+export const QUALITY: Record<LiveQuality, { side: number; bitrate: number; crf: number }> = {
+  sharp: { side: 1080, bitrate: 1_800_000, crf: 24 },
+  light: { side: 720, bitrate: 1_000_000, crf: 27 },
+}
 
 /** Video có phải HDR (HLG/PQ) không: đọc hộp màu 'colr' trong file MOV/MP4 */
 async function isHdrFile(file: File): Promise<boolean> {
@@ -84,9 +88,10 @@ function once(el: HTMLMediaElement, ok: string, timeoutMs = 15000) {
   })
 }
 
-async function pickCodec(width: number, height: number): Promise<string> {
-  for (const codec of ['avc1.4d401f', 'avc1.4d4028', 'avc1.42e01f', 'avc1.640028']) {
-    const s = await VideoEncoder.isConfigSupported({ codec, width, height, bitrate: BITRATE, framerate: FPS }).catch(() => null)
+async function pickCodec(width: number, height: number, bitrate: number): Promise<string> {
+  // High profile cho hình nét nhất ở cùng dung lượng; level 4.0 đủ cho 1080p
+  for (const codec of ['avc1.640028', 'avc1.4d4028', 'avc1.42e028', 'avc1.4d401f']) {
+    const s = await VideoEncoder.isConfigSupported({ codec, width, height, bitrate, framerate: FPS }).catch(() => null)
     if (s?.supported) return codec
   }
   throw new Error('Trình duyệt không nén được video H.264.')
@@ -94,7 +99,7 @@ async function pickCodec(width: number, height: number): Promise<string> {
 
 export async function makeLiveNative(
   file: File,
-  opts: { start: number; duration: number },
+  opts: { start: number; duration: number; quality?: LiveQuality },
   onProgress?: (p: number) => void,
 ): Promise<{ mp4: Blob; poster: Blob }> {
   const url = URL.createObjectURL(file)
@@ -111,7 +116,8 @@ export async function makeLiveNative(
     // Kích thước ra: cạnh ngắn 720px, số chẵn (trình duyệt đã tự xoay video dọc của iPhone)
     const vw = video.videoWidth
     const vh = video.videoHeight
-    const k = Math.min(1, SHORT_SIDE / Math.min(vw, vh))
+    const q = QUALITY[opts.quality ?? 'sharp']
+    const k = Math.min(1, q.side / Math.min(vw, vh))
     const width = Math.round((vw * k) / 2) * 2
     const height = Math.round((vh * k) / 2) * 2
 
@@ -121,20 +127,27 @@ export async function makeLiveNative(
     const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: true })!
     ctx.imageSmoothingQuality = 'high'
 
-    const codec = await pickCodec(width, height)
+    const codec = await pickCodec(width, height, q.bitrate)
     const hdr = await isHdrFile(file).catch(() => false)
     let lut: Uint8ClampedArray | null | undefined = hdr ? undefined : null
     const muxer = new Muxer({
       target: new ArrayBufferTarget(),
       video: { codec: 'avc', width, height, frameRate: FPS },
       fastStart: 'in-memory',
+      firstTimestampBehavior: 'offset',
     })
     let encodeError: Error | null = null
     encoder = new VideoEncoder({
-      output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+      output: (chunk, meta) => {
+        try {
+          muxer.addVideoChunk(chunk, meta)
+        } catch (e) {
+          encodeError = e instanceof Error ? e : new Error(String(e))
+        }
+      },
       error: (e) => (encodeError = e instanceof Error ? e : new Error(String(e))),
     })
-    encoder.configure({ codec, width, height, bitrate: BITRATE, framerate: FPS, latencyMode: 'quality', avc: { format: 'avc' } })
+    encoder.configure({ codec, width, height, bitrate: q.bitrate, bitrateMode: 'variable', framerate: FPS, latencyMode: 'quality', avc: { format: 'avc' } })
 
     const start = Math.max(0, Math.min(opts.start, Math.max(0, (video.duration || 0) - 0.1)))
     const end = Math.min(start + opts.duration, video.duration || start + opts.duration)
@@ -143,9 +156,12 @@ export async function makeLiveNative(
 
     let poster: Blob | null = null
     let frames = 0
-    let lastFrameTime = -1
+    let firstT = -1
+    let lastT = -1
+    let lastKey = -Infinity
 
-    // Phát đoạn đã chọn và chụp lại từng khung hình, đặt đều 30 hình/giây
+    // Phát chậm lại một nửa để không sót khung hình nào (máy yếu, video 4K), rồi chụp đúng thời điểm
+    // của từng khung gốc → chuyển động mượt như video gốc, tối đa 30 hình/giây
     await new Promise<void>((resolve, reject) => {
       let finished = false
       const finish = (err?: Error) => {
@@ -154,8 +170,7 @@ export async function makeLiveNative(
         video.pause()
         err ? reject(err) : resolve()
       }
-      const total = Math.max(1, Math.round((end - start) * FPS))
-      const draw = (t: number) => {
+      const capture = (t: number) => {
         ctx.drawImage(video, 0, 0, width, height)
         if (lut !== null) {
           const img = ctx.getImageData(0, 0, width, height)
@@ -170,39 +185,32 @@ export async function makeLiveNative(
             ctx.putImageData(img, 0, 0)
           }
         }
-        // Lấp các khung còn thiếu (video gốc 24/25 hình/giây hoặc máy chậm) bằng khung hiện tại
-        const target = Math.min(total, Math.floor((t - start) * FPS) + 1)
-        while (frames < target) {
-          const vf = new VideoFrame(canvas, { timestamp: Math.round((frames * 1e6) / FPS), duration: Math.round(1e6 / FPS) })
-          encoder!.encode(vf, { keyFrame: frames % (FPS * 2) === 0 })
-          vf.close()
-          frames++
-        }
-        if (!poster) canvas.toBlob((b) => (poster = b), 'image/jpeg', 0.85)
-        onProgress?.(frames / total)
-        return frames >= total
+        if (firstT < 0) firstT = t
+        const ts = Math.round((t - firstT) * 1e6)
+        const vf = new VideoFrame(canvas, { timestamp: ts, duration: Math.round(1e6 / FPS) })
+        const keyFrame = ts - lastKey >= 2e6 // khung chính mỗi 2 giây
+        if (keyFrame) lastKey = ts
+        encoder!.encode(vf, { keyFrame })
+        vf.close()
+        frames++
+        lastT = t
+        if (!poster) canvas.toBlob((b) => (poster = b), 'image/jpeg', 0.88)
+        onProgress?.(Math.min(1, (t - start) / (end - start)))
       }
       const onFrame = (_now: number, meta: VideoFrameCallbackMetadata) => {
         if (finished) return
         if (encodeError) return finish(encodeError)
         const t = meta.mediaTime
-        if (t !== lastFrameTime) {
-          lastFrameTime = t
-          if (t >= start - 0.05 && draw(Math.max(t, start))) return finish()
-        }
-        if (t >= end || video.ended) {
-          draw(end)
-          return finish()
-        }
+        if (t >= end - 0.001) return finish()
+        // bỏ khung quá sát khung trước (video 60 hình/giây) để giữ 30 hình/giây
+        if (t >= start - 0.02 && (lastT < 0 || t - lastT >= 1 / FPS - 0.005)) capture(t)
         video.requestVideoFrameCallback(onFrame)
       }
       video.requestVideoFrameCallback(onFrame)
-      video.addEventListener('ended', () => {
-        draw(end)
-        finish()
-      }, { once: true })
+      video.addEventListener('ended', () => finish(), { once: true })
       // Không bị kẹt nếu trình duyệt ngừng phát
-      setTimeout(() => finish(frames > FPS ? undefined : new Error('Trình duyệt không phát được video này.')), (end - start) * 1000 * 4 + 8000)
+      setTimeout(() => finish(frames > FPS ? undefined : new Error('Trình duyệt không phát được video này.')), (end - start) * 1000 * 10 + 8000)
+      video.playbackRate = 0.25
       video.play().catch((e) => finish(e instanceof Error ? e : new Error(String(e))))
     })
 

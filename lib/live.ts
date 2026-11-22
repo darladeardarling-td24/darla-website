@@ -1,7 +1,8 @@
 'use client'
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 import { supabaseBrowser } from './supabase/client'
-import { canMakeNative, makeLiveNative } from './live-native'
+import { canMakeNative, makeLiveNative, QUALITY, type LiveQuality } from './live-native'
+export type { LiveQuality }
 
 /**
  * Tạo "ảnh sống" từ video quay bằng điện thoại (kể cả video HEVC .MOV 4K của iPhone):
@@ -67,7 +68,7 @@ function resetFFmpeg() {
   loading = null
 }
 
-export async function makeLive(file: File, opts: { start: number; duration: number }, onProgress?: (p: number) => void): Promise<LiveResult> {
+export async function makeLive(file: File, opts: { start: number; duration: number; quality?: LiveQuality }, onProgress?: (p: number) => void): Promise<LiveResult> {
   const inputKB = Math.round(file.size / 1024)
   // 1) Cách chính: để trình duyệt tự xử lý (nhanh, đúng màu, ổn định với video iPhone)
   if (canMakeNative()) {
@@ -117,8 +118,9 @@ async function posterFrom(mp4: Blob): Promise<Blob> {
   }
 }
 
-async function makeLiveOnce(file: File, opts: { start: number; duration: number }, onProgress?: (p: number) => void): Promise<LiveResult> {
+async function makeLiveOnce(file: File, opts: { start: number; duration: number; quality?: LiveQuality }, onProgress?: (p: number) => void): Promise<LiveResult> {
   const ff = await loadFFmpeg()
+  const q = QUALITY[opts.quality ?? 'sharp']
   const ext = (file.name.split('.').pop() || 'mov').toLowerCase()
   const input = `in.${ext}`
   const handler = ({ progress }: { progress: number }) => onProgress?.(Math.max(0, Math.min(1, progress)))
@@ -131,8 +133,8 @@ async function makeLiveOnce(file: File, opts: { start: number; duration: number 
       '-i', input,
       '-an',
       // cạnh ngắn 720px (dọc hay ngang đều đúng), tự xoay theo hướng quay của iPhone
-      '-vf', "scale='if(gt(iw,ih),-2,720)':'if(gt(iw,ih),720,-2)':flags=lanczos,fps=30,format=yuv420p",
-      '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '27', '-profile:v', 'main',
+      '-vf', `scale='if(gt(iw,ih),-2,${q.side})':'if(gt(iw,ih),${q.side},-2)':flags=lanczos,fps=30,format=yuv420p`,
+      '-c:v', 'libx264', '-preset', 'veryfast', '-crf', String(q.crf), '-maxrate', String(q.bitrate), '-bufsize', String(q.bitrate * 2), '-profile:v', 'high',
       '-movflags', '+faststart',
       'out.mp4',
     ])
